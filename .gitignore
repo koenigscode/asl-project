@@ -1,3 +1,4 @@
+.DS_Store
 # Ignore the processed and unprocessed dataset
 dataset/
 processed_dataset/
