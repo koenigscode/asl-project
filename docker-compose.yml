@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: server
+    # mounting the server directory into the container,
+    # so that changes are live-reloaded.
+    # this makes development easier, if the developer
+    # wants to use docker during development.
+    volumes:
+      - ./server:/app
+    ports:
+      - "8000:8000"
