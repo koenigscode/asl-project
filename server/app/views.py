@@ -1,5 +1,6 @@
 from django.http import HttpResponse
+from django.shortcuts import render
 
 
 def index(request):
-    return HttpResponse("Hello ASL learner! This is our landing page!")
+    return render(request, 'app/index.html')
