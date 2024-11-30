@@ -11,56 +11,20 @@
 <body>
     <nav class="navbar">
         <div class="navbar-brand">
-            <a class="navbar-item" href="{{ request.scheme }}://{{ request.get_host }}/">
-                    Project Name
-                </a>
-
+            <a class="navbar-item has-text-weight-bold" href="{{ request.scheme }}://{{ request.get_host }}/">
+                    A Sign from Above
+            </a>
         </div>
+
+            <div class="px-2">
+            </div>
 
         <div id="navbarBasicExample" class="navbar-menu">
             <div class="navbar-start">
-                <a class="navbar-item">
-                    Home
+                    <a class="navbar-item" href="{% url 'browse' %}">
+                    Browse Words
                 </a>
-
-                <a class="navbar-item">
-                    Documentation
-                </a>
-
-                <div class="navbar-item has-dropdown is-hoverable">
-                    <a class="navbar-link">
-                        More
-                    </a>
-
-                    <div class="navbar-dropdown">
-                        <a class="navbar-item">
-                            About
-                        </a>
-                        <a class="navbar-item is-selected">
-                            Jobs
-                        </a>
-                        <a class="navbar-item">
-                            Contact
-                        </a>
-                        <hr class="navbar-divider">
-                        <a class="navbar-item">
-                            Report an issue
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="navbar-end">
-                <div class="navbar-item">
-                    <div class="buttons">
-                        <a class="button is-primary">
-                            <strong>Sign up</strong>
-                        </a>
-                        <a class="button is-light">
-                            Log in
-                        </a>
-                    </div>
-                </div>
+                    <a class="navbar-item" href="{% url 'study' %}">Study</a>
             </div>
         </div>
     </nav>
