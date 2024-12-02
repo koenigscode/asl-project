@@ -2,5 +2,112 @@
 {% block title %}Study{% endblock %}
 
 {% block content %}
-    <h1>Study</h1>
+<section class="section">
+    <div class="container">
+        <h1 class="title has-text-centered">Study</h1>
+        <h2 class="subtitle has-text-centered">Sign the following word: {{ word }}</h2>
+
+        <div class="is-flex is-flex-direction-column is-align-items-center">
+            <video id="preview" autoplay muted style="max-width: 100%; transform: scaleX(-1);"></video>
+            <br>
+
+            <div class="buttons" id="buttonContainer" style="display: none;">
+                <button class="button is-primary" id="startBtn">Start Recording</button>
+                <button class="button is-danger" id="stopBtn" disabled>Stop Recording</button>
+            </div>
+
+            <p id="status" class="has-text-centered mt-4"></p>
+
+            <button class="button is-link mt-4" id="nextBtn" style="display: none;">Next Word</button>
+        </div>
+    </div>
+</section>
+
+<script>
+    let mediaRecorder;
+    let recordedChunks = [];
+    let stream;
+
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const preview = document.getElementById('preview');
+    const status = document.getElementById('status');
+    const buttonContainer = document.getElementById('buttonContainer');
+    const nextBtn = document.getElementById('nextBtn');
+
+    async function initPreview() {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({video: true, audio: false});
+            preview.srcObject = stream;
+            status.textContent = 'Video preview is ready.';
+
+            // show buttons
+            buttonContainer.style.display = 'flex';
+        } catch (error) {
+            status.textContent = 'Error: Cant access webcam.';
+        }
+    }
+
+    async function startRecording() {
+        if (!stream) {
+            status.textContent = 'Cant access webcam.';
+            return;
+        }
+
+        mediaRecorder = new MediaRecorder(stream);
+        recordedChunks = [];
+
+        mediaRecorder.ondataavailable = event => {
+            if (event.data.size > 0) {
+                recordedChunks.push(event.data);
+            }
+        };
+
+        mediaRecorder.onstop = async () => {
+            const blob = new Blob(recordedChunks, {type: 'video/webm'});
+            const formData = new FormData();
+            formData.append('video', blob, 'recorded_video_no_audio.webm');
+
+            const response = await fetch('/upload-video/', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            status.textContent = response.ok ? result.result : `Error: ${result.error}`;
+
+            // hide buttons and video
+            preview.style.display = 'none';
+            buttonContainer.style.display = 'none';
+            nextBtn.style.display = 'block';
+        };
+
+        mediaRecorder.start();
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        status.textContent = 'Recording...';
+    }
+
+    function stopRecording() {
+        if (mediaRecorder) {
+            mediaRecorder.stop();
+            status.textContent = 'Stopped. Uploading...';
+        }
+
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+    }
+
+    nextBtn.addEventListener('click', () => {
+        location.reload();
+    });
+
+    startBtn.addEventListener('click', startRecording);
+    stopBtn.addEventListener('click', stopRecording);
+
+    window.onload = initPreview;
+</script>
 {% endblock %}
