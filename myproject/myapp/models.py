@@ -47,7 +47,7 @@ class TrainingJob(models.Model):
     hyperparameters = models.JSONField(default=dict, blank=True)
     started_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)
-    status = models.CharField(max_length=50)
+    status = models.CharField(max_length=20, default='PENDING', editable=False)
     output_model = models.OneToOneField(TrainedModel, on_delete=models.SET_NULL, null=True, blank=True, related_name='output_from_job')
 
     def __str__(self):

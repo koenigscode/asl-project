@@ -76,7 +76,8 @@ class TrainingJobAdmin(admin.ModelAdmin):
     # Customize the form for adding/editing TrainingJob
     def get_readonly_fields(self, request, obj=None):
         if obj:  # editing an existing object
-            return self.readonly_fields + ('dataset', 'hyperparameters')
+            if obj.status != 'PENDING':
+                return  ('dataset', 'base_model', 'hyperparameters',  'status', 'output_model' ) + self.readonly_fields
         return self.readonly_fields
 
     def get_urls(self):
@@ -84,44 +85,75 @@ class TrainingJobAdmin(admin.ModelAdmin):
         custom_urls = [
             path('start/<int:job_id>/', self.admin_site.admin_view(self.start_job), name='trainingjob-start'),
             path('pause/<int:job_id>/', self.admin_site.admin_view(self.pause_job), name='trainingjob-pause'),
-            path('resume/<int:job_id>/', self.admin_site.admin_view(self.resume_job), name='trainingjob-resume'),
-            path('stop/<int:job_id>/', self.admin_site.admin_view(self.stop_job), name='trainingjob-stop')
+            path('resume/<int:job_id>/', self.admin_site.admin_view(self.resume_job), name='trainingjob-resume')
         ]
         return custom_urls + urls
 
     def start_job(self, request, job_id):
         # Logic to start the job using PyTorch
         try:
-            #train_model(job_id)
+            job = TrainingJob.objects.get(id=job_id)
+            job.status = 'IN_PROGRESS'
+            job.save()
+
+            #TODO: the training is likely to take time, so it should be done in a separate thread so we can continue to use the admin interface
+            
+            # path_to_model = train_model(job_id)
             #self.message_user(request, "Training job started successfully.", level=messages.SUCCESS)
+
             self.message_user(request, "training not implemented yet.", level=messages.ERROR)
         except Exception as e:
+            job.status = 'ERROR'
+            job.save()
             self.message_user(request, str(e), level=messages.ERROR)
-        return redirect('..')  # Redirect back to the change list
+        return redirect('/admin/myapp/trainingjob/')  # Redirect back to the change list
 
     def pause_job(self, request, job_id):
         # Logic to pause the job
-        self.message_user(request, "Training job paused successfully.", level=messages.SUCCESS)
-        return redirect('..')
+        try:
+            job = TrainingJob.objects.get(id=job_id)
+            job.status = 'PAUSED'
+            job.save()
+            self.message_user(request, "training not implemented yet.", level=messages.ERROR)
+            #self.message_user(request, "Training job paused successfully.", level=messages.SUCCESS)
+        except Exception as e:
+            job.status = 'ERROR'
+            job.save()
+            self.message_user(request, str(e), level=messages.ERROR)
+        return redirect('/admin/myapp/trainingjob/')  # Redirect back to the change list
     
     def resume_job(self, request, job_id):
         # Logic to resume the job
-        self.message_user(request, "Training job resumed successfully.", level=messages.SUCCESS)
-        return redirect('..')
+        try:
+            job = TrainingJob.objects.get(id=job_id)
+            job.status = 'IN_PROGRESS'
+            job.save()
+            self.message_user(request, "training not implemented yet.", level=messages.ERROR)
+            #self.message_user(request, "Training job resumed successfully.", level=messages.SUCCESS)
+        except Exception as e:
+            job.status = 'ERROR'
+            job.save()
+            self.message_user(request, str(e), level=messages.ERROR)
+        return redirect('/admin/myapp/trainingjob/')
     
-    def stop_job(self, request, job_id):
-        # Logic to stop the job
-        self.message_user(request, "Training job stopped successfully.", level=messages.SUCCESS)
-        return redirect('..')
     
-    def start_training(self, obj):
-        return format_html('<a class="button" href="{}">Start</a>', f'start/{obj.id}')
+    def button(self, obj):
+        if obj.status == 'PENDING':
+            return format_html('<a class="button" href="{}">Start</a>', f'start/{obj.id}')
+        elif obj.status == 'IN_PROGRESS':
+            return format_html('<a class="button" href="{}">Pause</a>', f'pause/{obj.id}')
+        elif obj.status == 'PAUSED':
+            return format_html('<a class="button" href="{}">Resume</a>', f'resume/{obj.id}')
+        elif obj.status == 'COMPLETED':
+            return format_html('<a class="button" href="{}" disabled>Completed</a>', f'')
+        else:
+            return format_html('<a class="button" href="{}" disabled>ERROR</a>', f'')
     
+    # TODO: make the button changeable depending on the status of the training job
 
-    start_training.short_description = 'Start Training'
-    start_training.allow_tags = True
+    button.allow_tags = True
 
-    list_display = ('id', 'dataset', 'status', 'started_at', 'completed_at', 'start_training')
+    list_display = ('id', 'dataset', 'status', 'started_at', 'completed_at', 'button')
 
 @admin.register(TrainedModel)
 class TrainedModelAdmin(admin.ModelAdmin):
