@@ -13,7 +13,20 @@ def validate_pth_file(value):
     
 class Dataset(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    data_file = models.FileField(upload_to='datasets/', validators=[validate_zip_file])
+    data_file = models.FileField(
+        upload_to='datasets/',
+        validators=[validate_zip_file],
+        help_text=(
+            "Upload a ZIP file containing your dataset. "
+            "The ZIP file must contain a single root directory, "
+            "which includes 'train', 'test', and 'val' folders. <br/><br/>"
+            "dataset_name.zip/ <br/>"
+            "└── dataset_name/ <br/>"
+            "....├── train/ <br/>"
+            "....├── test/ <br/>"
+            "....└── val/"
+        )
+    )
     uploaded_at = models.DateTimeField(auto_now_add=True)
     root_directory = models.CharField(max_length=255, editable=False)
 
@@ -31,7 +44,7 @@ class TrainedModel(models.Model):
 class TrainingJob(models.Model):
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
     base_model = models.ForeignKey(TrainedModel, on_delete=models.SET_NULL, null=True, blank=True, related_name='training_jobs')
-    hyperparameters = models.JSONField()
+    hyperparameters = models.JSONField(default=dict, blank=True)
     started_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=50)

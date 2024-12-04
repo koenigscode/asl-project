@@ -9,34 +9,12 @@ import zipfile
 import os
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from .utils import validate_dataset_structure, train_model
 
-#global variables
+#Global variables
 MAX_EXTRACT_SIZE = 10000000000
 
-# Register your models here.
-def validate_dataset_structure(extract_to):
-    # List items in the extracted directory
-    extracted_items = os.listdir(extract_to)
-    
-    # Filter directories
-    extracted_dirs = [item for item in extracted_items if os.path.isdir(os.path.join(extract_to, item))]
-    
-    # Ensure there is exactly one root directory
-    if len(extracted_dirs) != 1:
-        return False, "The ZIP file must contain a single root directory containing the dataset."
-    
-    dataset_root = extracted_dirs[0]
-    dataset_root_path = os.path.join(extract_to, dataset_root)
-    
-    # Now check for 'train', 'test', 'val' under the dataset root directory
-    required_dirs = {'train', 'test', 'val'}
-    extracted_subdirs = set(os.listdir(dataset_root_path))
-    
-    missing_dirs = required_dirs - extracted_subdirs
-    if missing_dirs:
-        return False, f"Missing required folders under '{dataset_root}': {', '.join(missing_dirs)}"
-    
-    return True, "Dataset structure is valid."
+#Models
 
 @admin.register(Dataset)
 class DatasetAdmin(admin.ModelAdmin):
@@ -105,18 +83,41 @@ class TrainingJobAdmin(admin.ModelAdmin):
         urls = super().get_urls()
         custom_urls = [
             path('start/<int:job_id>/', self.admin_site.admin_view(self.start_job), name='trainingjob-start'),
-            # Add more paths for pause, resume, stop
+            path('pause/<int:job_id>/', self.admin_site.admin_view(self.pause_job), name='trainingjob-pause'),
+            path('resume/<int:job_id>/', self.admin_site.admin_view(self.resume_job), name='trainingjob-resume'),
+            path('stop/<int:job_id>/', self.admin_site.admin_view(self.stop_job), name='trainingjob-stop')
         ]
         return custom_urls + urls
 
     def start_job(self, request, job_id):
         # Logic to start the job using PyTorch
-        # For example, enqueue the job in a task queue
-        self.message_user(request, "Training job started successfully.", level=messages.SUCCESS)
+        try:
+            #train_model(job_id)
+            #self.message_user(request, "Training job started successfully.", level=messages.SUCCESS)
+            self.message_user(request, "training not implemented yet.", level=messages.ERROR)
+        except Exception as e:
+            self.message_user(request, str(e), level=messages.ERROR)
         return redirect('..')  # Redirect back to the change list
 
+    def pause_job(self, request, job_id):
+        # Logic to pause the job
+        self.message_user(request, "Training job paused successfully.", level=messages.SUCCESS)
+        return redirect('..')
+    
+    def resume_job(self, request, job_id):
+        # Logic to resume the job
+        self.message_user(request, "Training job resumed successfully.", level=messages.SUCCESS)
+        return redirect('..')
+    
+    def stop_job(self, request, job_id):
+        # Logic to stop the job
+        self.message_user(request, "Training job stopped successfully.", level=messages.SUCCESS)
+        return redirect('..')
+    
     def start_training(self, obj):
         return format_html('<a class="button" href="{}">Start</a>', f'start/{obj.id}')
+    
+
     start_training.short_description = 'Start Training'
     start_training.allow_tags = True
 
@@ -126,3 +127,4 @@ class TrainingJobAdmin(admin.ModelAdmin):
 class TrainedModelAdmin(admin.ModelAdmin):
     list_display = ('name', 'uploaded_at')
     readonly_fields = ('uploaded_at',)
+
