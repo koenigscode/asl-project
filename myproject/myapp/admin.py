@@ -7,12 +7,17 @@ from django.shortcuts import redirect
 from django.contrib import messages
 import zipfile
 import os
+from threading import Thread
+from django.db import transaction
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from .utils import validate_dataset_structure, train_model
+from .testTraining import testTraining
+from .shared_state import get_event, clear_event
 
 #Global variables
 MAX_EXTRACT_SIZE = 10000000000
+current_training_thread = None
 
 #Models
 
@@ -84,72 +89,99 @@ class TrainingJobAdmin(admin.ModelAdmin):
         urls = super().get_urls()
         custom_urls = [
             path('start/<int:job_id>/', self.admin_site.admin_view(self.start_job), name='trainingjob-start'),
-            path('pause/<int:job_id>/', self.admin_site.admin_view(self.pause_job), name='trainingjob-pause'),
-            path('resume/<int:job_id>/', self.admin_site.admin_view(self.resume_job), name='trainingjob-resume')
+            path('stop/<int:job_id>/', self.admin_site.admin_view(self.stop_job), name='trainingjob-stop')
         ]
         return custom_urls + urls
 
     def start_job(self, request, job_id):
-        # Logic to start the job using PyTorch
         try:
+            global current_training_thread
+
+            # Here we get the TrainingJob object as a variable and change its status to 'IN_PROGRESS'
             job = TrainingJob.objects.get(id=job_id)
             job.status = 'IN_PROGRESS'
             job.save()
 
-            #TODO: the training is likely to take time, so it should be done in a separate thread so we can continue to use the admin interface
-            
-            # path_to_model = train_model(job_id)
-            #self.message_user(request, "Training job started successfully.", level=messages.SUCCESS)
+            if current_training_thread is None:
+                # Start the training job in a separate thread
+                get_event(job_id) # Create a stop event for the job
+                current_training_thread = Thread(target=self._train_model_in_background, args=(job_id,))
+                current_training_thread.start()
+                self.message_user(request, "Training job started in background.", level=messages.SUCCESS)
+            else:
+                self.message_user(request, "Another training job is currently running. Cannot start another.", level=messages.WARNING)
+                return redirect('/admin/myapp/trainingjob/')
 
-            self.message_user(request, "training not implemented yet.", level=messages.ERROR)
         except Exception as e:
             job.status = 'ERROR'
             job.save()
-            self.message_user(request, str(e), level=messages.ERROR)
-        return redirect('/admin/myapp/trainingjob/')  # Redirect back to the change list
+            self.message_user(request, str("An error occured, error message: " + e), level=messages.ERROR)
 
-    def pause_job(self, request, job_id):
-        # Logic to pause the job
-        try:
-            job = TrainingJob.objects.get(id=job_id)
-            job.status = 'PAUSED'
-            job.save()
-            self.message_user(request, "training not implemented yet.", level=messages.ERROR)
-            #self.message_user(request, "Training job paused successfully.", level=messages.SUCCESS)
-        except Exception as e:
-            job.status = 'ERROR'
-            job.save()
-            self.message_user(request, str(e), level=messages.ERROR)
         return redirect('/admin/myapp/trainingjob/')  # Redirect back to the change list
     
-    def resume_job(self, request, job_id):
-        # Logic to resume the job
+    def stop_job(self, request, job_id):
+        """Stop the job by setting the stop flag and returning to PENDING."""
         try:
+            global current_training_thread
+
             job = TrainingJob.objects.get(id=job_id)
-            job.status = 'IN_PROGRESS'
-            job.save()
-            self.message_user(request, "training not implemented yet.", level=messages.ERROR)
-            #self.message_user(request, "Training job resumed successfully.", level=messages.SUCCESS)
+
+            if job.status != 'IN_PROGRESS':
+                self.message_user(request, "The job is not currently running.", level=messages.WARNING)
+                return redirect('/admin/myapp/trainingjob/')
+
+            # Wait for the training thread to stop
+            if current_training_thread is not None and current_training_thread.is_alive():
+                    get_event(job_id).set() # Set the stop event
+                    current_training_thread.join() # Wait for the thread to stop, which should happen promptly because of the stop flag
+            else:
+                self.message_user(request, "No training job is currently running.", level=messages.WARNING)
+                
+
+            # Reset job status to 'PENDING' after the job is stopped
+            job.status = 'PENDING'
+            job.save()  
+            clear_event(job_id) # Clear the stop event
+            # Depending on the implementation, we may want to delete the output model file here
+            
+            # Display success message
+            self.message_user(request, "Training job stopped successfully.", level=messages.SUCCESS)
+
         except Exception as e:
             job.status = 'ERROR'
             job.save()
-            self.message_user(request, str(e), level=messages.ERROR)
-        return redirect('/admin/myapp/trainingjob/')
+            self.message_user(request, f"An error occurred: {e}", level=messages.ERROR)
+
+        return redirect('/admin/myapp/trainingjob/')  # Redirect back to the change list        
+    
+    def _train_model_in_background(self, job_id):
+        """Function to ensure database integrity when a thread is opened. """
+        try:
+            with transaction.atomic():  # Ensure database integrity
+                #train_ai_model(job_id)
+                testTraining(job_id)
+        except Exception as e:
+            # Log error as status in the database
+            job = TrainingJob.objects.get(id=job_id)
+            job.status = 'ERROR'
+            job.save()
+
+            print(f"Error during training: {e}")
+        finally:
+            global current_training_thread
+            current_training_thread = None
     
     
     def button(self, obj):
         if obj.status == 'PENDING':
             return format_html('<a class="button" href="{}">Start</a>', f'start/{obj.id}')
         elif obj.status == 'IN_PROGRESS':
-            return format_html('<a class="button" href="{}">Pause</a>', f'pause/{obj.id}')
-        elif obj.status == 'PAUSED':
-            return format_html('<a class="button" href="{}">Resume</a>', f'resume/{obj.id}')
+            return format_html('<a class="button" href="{}">Stop</a>', f'stop/{obj.id}')
         elif obj.status == 'COMPLETED':
             return format_html('<a class="button" href="{}" disabled>Completed</a>', f'')
         else:
             return format_html('<a class="button" href="{}" disabled>ERROR</a>', f'')
     
-    # TODO: make the button changeable depending on the status of the training job
 
     button.allow_tags = True
 
