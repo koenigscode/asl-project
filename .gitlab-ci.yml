@@ -27,7 +27,6 @@ build:
   script:
     - docker info
     - docker build -f server/Dockerfile -t gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA .
-    - docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA
 
 deploy:
   stage: deploy
