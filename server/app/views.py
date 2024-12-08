@@ -26,12 +26,13 @@ def browse(request):
 
 
 def study(request):
-    video_dir = os.path.join(settings.STATICFILES_DIRS[0], 'videos')
-    video_files = [
-        os.path.splitext(file)[0]
-        for file in os.listdir(video_dir) if file.endswith(('.mp4', '.webm', '.ogg'))
-    ]
-    return render(request, 'app/study.html', {'word': random.choice(video_files)})
+    WORDS = os.getenv('WORDS')
+    if WORDS is None:
+        raise ValueError("Environment variable 'WORDS' is not set.")
+    words = WORDS.split(',')
+
+
+    return render(request, 'app/study.html', {'word': random.choice(words)})
 
 
 @csrf_exempt

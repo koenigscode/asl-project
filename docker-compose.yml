@@ -9,6 +9,7 @@ services:
     environment:
       - NUM_FEATURES=126
       - MAX_FRAMES=47
+      - WORDS=no,eat,teacher
     # mounting the server directory into the container,
     # so that changes are live-reloaded.
     # this makes development easier, if the developer

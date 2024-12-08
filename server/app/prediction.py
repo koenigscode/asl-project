@@ -1,16 +1,14 @@
 import os
+import tensorflow as tf
 from tensorflow import keras
 from keras.models import load_model
 from . import landmark_detector as ld
 import numpy as np
 import cv2
-
-
-words = ['deaf', 'eat', 'fish', 'friend', 'like', 'milk', 'nice',
-         'no', 'orange', 'teacher', 'want', 'what', 'where', 'yes']
+import logging
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODEL_PATH = os.path.join(BASE_DIR, 'all_data.keras')
+MODEL_PATH = os.path.join(BASE_DIR, 'draft_model.keras')
 DETECTOR_PATH = os.path.join(BASE_DIR, 'hand_landmarker.task')
 NUM_FEATURES = os.getenv('NUM_FEATURES')
 if NUM_FEATURES is None:
@@ -22,8 +20,15 @@ if MAX_FRAMES is None:
     raise ValueError("Environment variable 'MAX_FRAMES' is not set.")
 max_frames = int(MAX_FRAMES)
 
+WORDS = os.getenv('WORDS')
+if WORDS is None:
+    raise ValueError("Environment variable 'WORDS' is not set.")
+words = WORDS.split(',')
+
 model = load_model(MODEL_PATH)
 detector = ld.get_detector(DETECTOR_PATH)
+
+logger = logging.getLogger('asl')
 
 
 def adjust_video_fps(video_path, target_fps=5):
@@ -56,7 +61,6 @@ def adjust_video_fps(video_path, target_fps=5):
 
 
 def predict(video_path):
-    print("!!!!!!!!!! PREDICT!!!!!!!!!!")
     video_X = []
     adjust_video_fps(video_path)
     landmarks = ld.get_landmarks(video_path, detector)
@@ -64,10 +68,10 @@ def predict(video_path):
     prediction_X = []
 
     if len(landmarks) == 0:
-        print("No landmarks detected")
+        logger.debug("No landmarks detected")
         return None
     else:
-        print(f"detected {len(landmarks)} landmarks")
+        logger.debug(f"detected {len(landmarks)} landmark frames")
         for frame in range(len(landmarks)):
             features = np.array(landmarks[frame]).flatten()
             features = np.pad(
@@ -79,16 +83,18 @@ def predict(video_path):
 
     prediction_X.append(video_X)
 
-    print(f"Shape of prediction_X: {np.array(prediction_X).shape}")
-    print("Before running predict")
-    predictions = model.predict(np.array(prediction_X))
-    print("After running predict")
+    logger.debug(f"Shape of prediction_X: {np.array(prediction_X).shape}")
+    predictions = model.predict(np.array(prediction_X), verbose=0)
 
     predicted_class = np.argmax(predictions)
     # Returns the maximum probability
     predicted_probability = np.max(predictions)
 
-    print(f"predicted {words[predicted_class]} with probability {
-          predicted_probability}")
+    logger.debug("Probabilities for each word:")
+    for i, prob in enumerate(predictions[0]):
+        logger.debug(f"{words[i]}: {prob:.3f}")
+
+    logger.debug(f"predicted {words[predicted_class]}"
+          + f" with probability {predicted_probability}")
 
     return (words[predicted_class], predicted_probability)
