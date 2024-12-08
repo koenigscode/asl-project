@@ -8,10 +8,14 @@ variables:
   SERVICE_NAME: server-group4
 
 before_script:
+  - apt-get update && apt-get install -y curl
+  - curl https://sdk.cloud.google.com | bash
+  - source $HOME/google-cloud-sdk/path.bash.inc
   - echo $GCLOUD_SERVICE_KEY | base64 -d > gcloud-key.json
   - gcloud auth activate-service-account --key-file=gcloud-key.json
   - gcloud config set project $PROJECT_ID
   - gcloud auth configure-docker gcr.io
+
 
 build:
   stage: build
