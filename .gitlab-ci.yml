@@ -27,14 +27,4 @@ build:
   script:
     - docker info
     - docker build -f server/Dockerfile -t gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA .
-
-deploy:
-  stage: deploy
-  image: google/cloud-sdk:latest
-  services:
-    - docker:dind
-  script:
     - docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA
-  only:
-    - tags
-    - /^release.*$/
