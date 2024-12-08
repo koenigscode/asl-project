@@ -67,6 +67,7 @@
             const blob = new Blob(recordedChunks, {type: 'video/webm'});
             const formData = new FormData();
             formData.append('video', blob, 'recorded_video_no_audio.webm');
+            formData.append('word', '{{ word }}');
 
             const response = await fetch('/upload-video/', {
                 method: 'POST',

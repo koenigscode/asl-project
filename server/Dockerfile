@@ -4,7 +4,7 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y libgl1 libglib2.0-0
 
-RUN pip install django opencv-python
+RUN pip install django opencv-python tensorflow mediapipe
 
 COPY . .
 

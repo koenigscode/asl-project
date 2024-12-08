@@ -5,6 +5,7 @@ from django.conf import settings
 import random
 import cv2
 from django.views.decorators.csrf import csrf_exempt
+from .prediction import predict
 import tempfile
 
 
@@ -37,26 +38,19 @@ def study(request):
 def upload_video(request):
     if request.method == 'POST' and request.FILES.get('video'):
         video_file = request.FILES['video']
+        word = request.POST.get('word')
 
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.webm') as tmp_file:
+        with tempfile.NamedTemporaryFile(delete=True, suffix='.mp4') as tmp_file:
             tmp_file.write(video_file.read())
             tmp_file_path = tmp_file.name
+            prediction = predict(tmp_file_path)
 
-        cap = cv2.VideoCapture(tmp_file_path)
-
-        if not cap.isOpened():
-            return JsonResponse({'error': 'Cant open video recording'}, status=400)
-
-        ret, frame = cap.read()
-        if not ret:
-            cap.release()
-            return JsonResponse({'error': 'Cant read video frame'}, status=400)
-
-        # TODO: run inference on video
-
-        result = "Well, this is a placeholder. But it means the server received the video! You might have signed it correctly!"
-
-        cap.release()
+        if prediction is None:
+            return JsonResponse({'error': "Couldn't detect any hand movement"}, status=400)
+        elif prediction[0] == word:
+            result = "Correctly signed!"
+        else:
+            result = f"Wrong sign! We thought you signed {prediction[0]}."
 
         return JsonResponse({'result': result})
 
