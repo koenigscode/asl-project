@@ -22,6 +22,7 @@ def get_landmarks(video_path, detector, show_landmarks=False):
     if not cap.isOpened():
         raise FileNotFoundError("The video file not found")
     result = []
+    num_frames = int(cap.get(cv.CAP_PROP_FRAME_COUNT))
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
@@ -44,12 +45,13 @@ def get_landmarks(video_path, detector, show_landmarks=False):
                 break
     cap.release()
     cv.destroyAllWindows()
-    return result
+    return result, num_frames
 
 
 if __name__ == '__main__':
     model_path = os.path.abspath('./models/hand_landmarker.task')
     detector = get_detector(model_path)
-    video_path = 'preprocessing/dataset/train/want/0027.mp4'
-    landmarks = get_landmarks(video_path, detector, True)
+    video_path = 'preprocessing/dataset/train/eat/0001.mp4'
+    landmarks, frames = get_landmarks(video_path, detector)
     print(landmarks)
+    print(frames)
