@@ -16,7 +16,7 @@ build:
   stage: build
   tags:
     - docker-build
-  image: docker:24
+  image: google/cloud-sdk:latest
   services:
     - docker:24-dind
   script:
