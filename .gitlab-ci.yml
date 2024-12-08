@@ -11,6 +11,7 @@ before_script:
   - echo $GCLOUD_SERVICE_KEY | base64 -d > gcloud-key.json
   - gcloud auth activate-service-account --key-file=gcloud-key.json
   - gcloud config set project $PROJECT_ID
+  - gcloud auth configure-docker gcr.io
 
 build:
   stage: build
