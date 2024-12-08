@@ -20,6 +20,7 @@ build:
   services:
     - docker:24-dind
   script:
+    - docker info
     - docker build -t gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA .
     - docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA
 
