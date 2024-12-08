@@ -7,14 +7,13 @@ services:
       dockerfile: Dockerfile
     container_name: server
     environment:
-      - NUM_FEATURES=126
-      - MAX_FRAMES=47
-      - WORDS=no,eat,teacher
+      - MODEL_NAME=draft_model
     # mounting the server directory into the container,
     # so that changes are live-reloaded.
     # this makes development easier, if the developer
     # wants to use docker during development.
     volumes:
       - ./server:/app
+      - ./models:/models
     ports:
       - "8000:8000"

@@ -6,10 +6,18 @@ from . import landmark_detector as ld
 import numpy as np
 import cv2
 import logging
+from dotenv import load_dotenv
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODEL_PATH = os.path.join(BASE_DIR, 'draft_model.keras')
-DETECTOR_PATH = os.path.join(BASE_DIR, 'hand_landmarker.task')
+MODEL_NAME = os.getenv('MODEL_NAME')
+if MODEL_NAME is None:
+    raise ValueError("Environment variable 'MODEL_NAME' is not set.")
+
+DETECTOR_PATH = '/models/hand_landmarker.task'
+MODEL_PATH = f'/models/{MODEL_NAME}.keras'
+MODEL_SETTINGS = f'/models/{MODEL_NAME}.env'
+load_dotenv(MODEL_SETTINGS)
+
+
 NUM_FEATURES = os.getenv('NUM_FEATURES')
 if NUM_FEATURES is None:
     raise ValueError("Environment variable 'NUM_FEATURES' is not set.")
@@ -95,6 +103,6 @@ def predict(video_path):
         logger.debug(f"{words[i]}: {prob:.3f}")
 
     logger.debug(f"predicted {words[predicted_class]}"
-          + f" with probability {predicted_probability}")
+                 + f" with probability {predicted_probability}")
 
     return (words[predicted_class], predicted_probability)
