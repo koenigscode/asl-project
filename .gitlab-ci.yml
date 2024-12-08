@@ -14,6 +14,8 @@ before_script:
 
 build:
   stage: build
+  tags:
+    - docker-build
   image: docker:24
   services:
     - docker:24-dind
