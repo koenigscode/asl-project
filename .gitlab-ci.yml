@@ -19,6 +19,10 @@ build:
   image: google/cloud-sdk:latest
   services:
     - docker:dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_DRIVER: overlay2
   script:
     - docker info
     - docker build -t gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA .
