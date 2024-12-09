@@ -1,0 +1,30 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  PROJECT_ID: asl-group4
+  REGION: us-central1
+  SERVICE_NAME: server-group4
+
+before_script:
+  - echo $GCLOUD_SERVICE_KEY | base64 -d > gcloud-key.json
+  - gcloud auth activate-service-account --key-file=gcloud-key.json
+  - gcloud config set project $PROJECT_ID
+  - gcloud auth configure-docker gcr.io
+
+build:
+  stage: build
+  tags:
+    - docker-build
+  image: google/cloud-sdk:latest
+  services:
+    - docker:dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_DRIVER: overlay2
+  script:
+    - docker info
+    - docker build -f server/Dockerfile -t gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA .
+    - docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA
