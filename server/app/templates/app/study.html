@@ -142,7 +142,7 @@
     }
 
     nextBtn.addEventListener('click', () => {
-        location.reload();  
+        window.location.href = `/study/?last_word={{ word }}`;
     });
 
     startBtn.addEventListener('click', startRecording);

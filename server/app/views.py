@@ -30,6 +30,12 @@ def study(request):
     if WORDS is None:
         raise ValueError("Environment variable 'WORDS' is not set.")
     words = WORDS.split(',')
+
+    # don't show same word two times in a row
+    last_word = request.GET.get('last_word')
+    if last_word in words:
+        words.remove(last_word)
+
     word = random.choice(words)
     instruction_video = f"videos/{word}.mp4"
 
