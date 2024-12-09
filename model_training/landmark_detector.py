@@ -7,10 +7,8 @@ from mediapipe.framework.formats import landmark_pb2
 import os
 import cv2 as cv
 
-def get_detector():
-    
+def get_detector(model_path):
     # Check if the model exists
-    model_path = os.path.abspath('./models/hand_landmarker.task')
     if not os.path.exists(model_path):
         raise FileNotFoundError("The hand_landmarker Model not found")
 
@@ -21,7 +19,10 @@ def get_detector():
 
 def get_landmarks(video_path, detector, show_landmarks=False):
     cap = cv.VideoCapture(video_path)
-    all_landmarks = []
+    if not cap.isOpened():
+        raise FileNotFoundError("The video file not found")
+    result = []
+    num_frames = int(cap.get(cv.CAP_PROP_FRAME_COUNT))
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
@@ -29,24 +30,28 @@ def get_landmarks(video_path, detector, show_landmarks=False):
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
         detection_result = detector.detect(mp_image)
         hand_landmarks = detection_result.hand_landmarks
-        all_landmarks.append(hand_landmarks)
+        if hand_landmarks:
+            result.append([[[landmark.x, landmark.y, landmark.z] for landmark in hand] for hand in hand_landmarks])
         if show_landmarks:
             if hand_landmarks:
-                normal_list = landmark_pb2.NormalizedLandmarkList()
-                normal_list.landmark.extend([
-                landmark_pb2.NormalizedLandmark(x=landmark.x, y=landmark.y, z=landmark.z) for landmark in hand_landmarks[0]
-                ])
-                mp.solutions.drawing_utils.draw_landmarks(frame, normal_list, mp.solutions.hands.HAND_CONNECTIONS)
+                for hand_landmark in hand_landmarks:
+                    normal_list = landmark_pb2.NormalizedLandmarkList()
+                    normal_list.landmark.extend([
+                        landmark_pb2.NormalizedLandmark(x=landmark.x, y=landmark.y, z=landmark.z) for landmark in hand_landmark
+                    ])
+                    mp.solutions.drawing_utils.draw_landmarks(frame, normal_list, mp.solutions.hands.HAND_CONNECTIONS)
                 cv.imshow('Hand Landmarks', frame)
-            if cv.waitKey(1000) & 0xFF == ord('q'):
+            if cv.waitKey(50) & 0xFF == ord('q'):
                 break
     cap.release()
     cv.destroyAllWindows()
-    return all_landmarks
+    return result, num_frames
 
 
 if __name__ == '__main__':
-    detector = get_detector()
-    video_path = 'preprocessing/dataset/train/like/0005.mp4'
-    landmarks = get_landmarks(video_path, detector, True)
+    model_path = os.path.abspath('./models/hand_landmarker.task')
+    detector = get_detector(model_path)
+    video_path = 'preprocessing/dataset/train/eat/0001.mp4'
+    landmarks, frames = get_landmarks(video_path, detector)
     print(landmarks)
+    print(frames)
