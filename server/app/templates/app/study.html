@@ -1,15 +1,32 @@
 {% extends "app/base.html" %}
+{% load static %}
 {% block title %}Study{% endblock %}
 
 {% block content %}
 <section class="section">
     <div class="container">
         <h1 class="title has-text-centered">Study</h1>
-        <h2 class="subtitle has-text-centered">Sign the following word: <span class="tag is-medium is-primary">{{ word }}</span></h2>
+        <h2 class="subtitle has-text-centered">
+            Sign the following word: <span class="tag is-medium is-primary">{{ word }}</span>
+        </h2>
 
         <div class="is-flex is-flex-direction-column is-align-items-center">
-            <video id="preview" autoplay muted style="max-width: 100%; transform: scaleX(-1);"></video>
-            <br>
+            
+            <label class="checkbox mb-5">
+                <input type="checkbox" id="showInstructionSwitch">
+                <span class="ml-2">Show Instruction Video</span>
+            </label>
+
+            <div class="is-flex is-item-align-center is-justify-content-center mb-5">
+
+                <video id="preview" autoplay muted style="max-width: 100%; transform: scaleX(-1);" class="mr-3"></video>
+
+                <video id="instructionVideo" muted autoplay loop style="max-width: 50%; display: none;">
+                    <source src="{% static instruction_video %}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+
+            </div>
 
             <div class="buttons" id="buttonContainer" style="display: none;">
                 <button class="button is-primary" id="startBtn">Start Recording</button>
@@ -34,23 +51,45 @@
     const status = document.getElementById('status');
     const buttonContainer = document.getElementById('buttonContainer');
     const nextBtn = document.getElementById('nextBtn');
+    const instructionVideo = document.getElementById('instructionVideo');
+    const showInstructionSwitch = document.getElementById('showInstructionSwitch');
+
+    function restoreCheckboxState() {
+        const isChecked = localStorage.getItem('showInstruction') === 'true';
+        showInstructionSwitch.checked = isChecked;
+        toggleInstructionVideo(isChecked);
+    }
+
+    function toggleInstructionVideo(show) {
+        instructionVideo.style.display = show ? 'block' : 'none';
+        if (show) {
+            instructionVideo.play();
+        } else {
+            instructionVideo.pause();
+            instructionVideo.currentTime = 0;
+        }
+    }
+
+    showInstructionSwitch.addEventListener('change', () => {
+        const isChecked = showInstructionSwitch.checked;
+        localStorage.setItem('showInstruction', isChecked);
+        toggleInstructionVideo(isChecked);
+    });
 
     async function initPreview() {
         try {
             stream = await navigator.mediaDevices.getUserMedia({video: true, audio: false});
             preview.srcObject = stream;
             status.textContent = 'Video preview is ready.';
-
-            // show buttons
-            buttonContainer.style.display = 'flex';
+            buttonContainer.style.display = 'flex'; 
         } catch (error) {
-            status.textContent = 'Error: Cant access webcam.';
+            status.textContent = 'Error: Cannot access webcam.';
         }
     }
 
     async function startRecording() {
         if (!stream) {
-            status.textContent = 'Cant access webcam.';
+            status.textContent = 'Cannot access webcam.';
             return;
         }
 
@@ -77,7 +116,7 @@
             const result = await response.json();
             status.textContent = response.ok ? result.result : `Error: ${result.error}`;
 
-            // hide buttons and video
+            // Hide elements after upload
             preview.style.display = 'none';
             buttonContainer.style.display = 'none';
             nextBtn.style.display = 'block';
@@ -103,12 +142,16 @@
     }
 
     nextBtn.addEventListener('click', () => {
-        location.reload();
+        location.reload();  
     });
 
     startBtn.addEventListener('click', startRecording);
     stopBtn.addEventListener('click', stopRecording);
 
-    window.onload = initPreview;
+    window.onload = () => {
+        restoreCheckboxState();  
+        initPreview();  
+    };
 </script>
 {% endblock %}
+

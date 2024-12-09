@@ -30,9 +30,10 @@ def study(request):
     if WORDS is None:
         raise ValueError("Environment variable 'WORDS' is not set.")
     words = WORDS.split(',')
+    word = random.choice(words)
+    instruction_video = f"videos/{word}.mp4"
 
-
-    return render(request, 'app/study.html', {'word': random.choice(words)})
+    return render(request, 'app/study.html', {'word': word, 'instruction_video': instruction_video})
 
 
 @csrf_exempt
