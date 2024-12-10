@@ -8,6 +8,7 @@ services:
     container_name: server
     environment:
       - MODEL_NAME=draft_model
+      - DEBUG=True
     # mounting the server directory into the container,
     # so that changes are live-reloaded.
     # this makes development easier, if the developer
