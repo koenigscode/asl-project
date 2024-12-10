@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+    <title>{% block title %}My Django Project{% endblock %}</title>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <a class="navbar-item has-text-weight-bold" href="{{ request.scheme }}://{{ request.get_host }}/">
+                    A Sign from Above
+            </a>
+        </div>
+
+            <div class="px-2">
+            </div>
+
+        <div id="navbarBasicExample" class="navbar-menu">
+            <div class="navbar-start">
+                    <a class="navbar-item" href="{% url 'browse' %}">
+                    Browse Words
+                </a>
+                    <a class="navbar-item" href="{% url 'study' %}">Study</a>
+            </div>
+        </div>
+    </nav>
+    {% block content %}
+    {% endblock %}
+</body>
+
+</html>

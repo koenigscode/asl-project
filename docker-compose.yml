@@ -6,11 +6,15 @@ services:
       context: ./server
       dockerfile: Dockerfile
     container_name: server
+    environment:
+      - MODEL_NAME=draft_model
+      - DEBUG=True
     # mounting the server directory into the container,
     # so that changes are live-reloaded.
     # this makes development easier, if the developer
     # wants to use docker during development.
     volumes:
       - ./server:/app
+      - ./models:/models
     ports:
       - "8000:8000"
