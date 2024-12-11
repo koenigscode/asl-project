@@ -41,7 +41,7 @@ detector = ld.get_detector(DETECTOR_PATH)
 logger = logging.getLogger('asl')
 
 
-def adjust_video_fps(video_path, target_fps=5):
+def adjust_video_fps(video_path, target_fps=24):
     cap = cv2.VideoCapture(video_path)
 
     original_fps = cap.get(cv2.CAP_PROP_FPS)
@@ -52,6 +52,8 @@ def adjust_video_fps(video_path, target_fps=5):
         new_fps = total_frames / max_frames
     else:
         new_fps = target_fps
+
+    logger.info(f"Changed video to {new_fps} fps")
 
     temp_video_path = f"{os.path.splitext(video_path)[0]}_temp.mp4"
     out = cv2.VideoWriter(
