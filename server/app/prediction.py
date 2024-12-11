@@ -35,13 +35,18 @@ if WORDS is None:
     raise ValueError("Environment variable 'WORDS' is not set.")
 words = WORDS.split(',')
 
+FPS = os.getenv('FPS')
+if FPS is None:
+    raise ValueError("Environment variable 'FPS' is not set.")
+fps = int(FPS)
+
 model = load_model(MODEL_PATH)
 detector = ld.get_detector(DETECTOR_PATH)
 
 logger = logging.getLogger('asl')
 
 
-def adjust_video_fps(video_path, target_fps=24):
+def adjust_video_fps(video_path, target_fps=5):
     cap = cv2.VideoCapture(video_path)
 
     original_fps = cap.get(cv2.CAP_PROP_FPS)
@@ -98,7 +103,7 @@ def save_recording(video_path, correct_class):
 
 def predict(video_path, correct_class):
     video_X = []
-    adjust_video_fps(video_path)
+    adjust_video_fps(video_path, fps)
     landmarks = ld.get_landmarks(video_path, detector)
 
     prediction_X = []
