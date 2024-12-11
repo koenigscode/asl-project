@@ -8,6 +8,7 @@ services:
     container_name: server
     environment:
       - MODEL_NAME=draft_model
+      - SAVE_RECORDINGS=True
       - DEBUG=True
     # mounting the server directory into the container,
     # so that changes are live-reloaded.
@@ -16,5 +17,6 @@ services:
     volumes:
       - ./server:/app
       - ./models:/models
+      - ./recordings:/recordings
     ports:
       - "8000:8000"
