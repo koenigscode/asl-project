@@ -29,10 +29,10 @@ python3 generate-all-data.py
 
 Generate a subset of that data with the signs that you want included in the dataset:
 ```bash
-python3 generate-initial-data.py all-data.db initial-data.db eat nice want teacher orange white what like friend fish yes where no milk deaf
+python3 generate-initial-data.py all-data.db initial-data.db eat no teacher want
 ```
 
-Generate a folder structure with the videos from the initial dataset:
+Generate a folder structure with the videos from the initial dataset, and set the fps:
 ```bash
-python3 generate-videos.py initial-data.db
+python generate-videos.py initial-data.db 24
 ```
