@@ -37,7 +37,7 @@ def trim_and_crop_video(input_path, output_path, start_time, end_time, box, vide
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    video.write_videofile(output_path, fps=fps)
+    video.write_videofile(output_path, fps=min(fps, video.fps), codec='libx264')
     os.remove(input_path)
 
 
