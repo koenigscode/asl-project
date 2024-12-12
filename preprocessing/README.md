@@ -38,6 +38,12 @@ python generate-videos.py initial-data.db 24
 ```
 
 Merge folders:
+
+Make sure you have the folder `processing/datasets`, which contains the files from
+[Google Drive](https://drive.google.com/drive/folders/1cV8PywmyJMYZQgGM-fDWff11nkbltyfy?usp=sharing).
+
+`datasets` should directly contain the folders 'from-adam', 'from-david', etc
+
 ```bash
-python merge-folders.py ../recordings-michael ../recordings-sofia [more folders...]
+python merge-folders.py datasets/top*/* datasets/from-*
 ```
