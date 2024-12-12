@@ -38,6 +38,9 @@ python generate-videos.py initial-data.db 24
 ```
 
 Merge folders:
+
+Make sure you have the folder `processing/dataset`
+
 ```bash
 python merge-folders.py ../recordings-michael ../recordings-sofia [more folders...]
 ```
