@@ -36,3 +36,8 @@ Generate a folder structure with the videos from the initial dataset, and set th
 ```bash
 python generate-videos.py initial-data.db 24
 ```
+
+Merge folders:
+```bash
+python merge-folders.py ../recordings-michael ../recordings-sofia [more folders...]
+```
