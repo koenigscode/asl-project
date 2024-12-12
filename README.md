@@ -1,24 +1,37 @@
 # A Sign from Above
 
+
+## Project Description
+This application helps users practice signing words in ASL.
+
+The user is presented with how the words are signed,
+and has to sign the prompted word to practice their newly acquired knowledge.
+
+The user can choose whether they want to see an instruction video on how to sign a word, or if they want to practice without any help.
+The app then gives feedback on whether the word was signed correctly or not.
+
+The goal of this system is to be an educational tool that can be used to increase ASL literacy by providing an easy to use environment for learning.
+
+
 ## Getting started
 ### Setting up the dataset
-Make sure you have the folder `processing/datasets`, which contains the files from
+Make sure you have the folder `preprocessing/datasets`, which contains the files from
 [Google Drive](https://drive.google.com/drive/folders/1cV8PywmyJMYZQgGM-fDWff11nkbltyfy?usp=sharing).
 
 `datasets` should directly contain the folders 'from-adam', 'from-david', etc
 
 Then, merge the datasets into one dataset:
 ```bash
-cd processing
+cd preprocessing
 python merge-folders.py datasets/top*/* datasets/from-*
 ```
 
 Depending on your installation, you might need to use `python3` instead of `python`.
 If you're in a conda environment, `python` should be fine.
 
-This created the folder `processing/dataset-merged`.
+This created the folder `preprocessing/dataset-merged`.
 
-If you want to use different words for training, or want to use a different dataset, you can look at [processing/README.md](./processing/README.md).
+If you want to use different words for training, or want to use a different dataset, you can look at [preprocessing/README.md](./preprocessing/README.md).
 
 ### Training the model
 Open [model_training/asl_pipeline.ipynb](./model_training/asl_pipeline.ipynb) in Jupyter Notebook and execute everything.
@@ -49,7 +62,7 @@ Only videos where hand landmarks were detected are saved.
 ## Folder structure
 - `model_training`: Jupyter Notebook for training the model, landmark detection script
 - `models`: Trained models, `.env` file for model metadata, landmark detection model
-- `processing`: Scripts for downloading videos from the original dataset, cropping them, changing the fps,
+- `preprocessing`: Scripts for downloading videos from the original dataset, cropping them, changing the fps,
     cutting them and merging dataset folders. You should have downloaded the datasets folder into this folder.
 - `server`: Django server for the app
     - `server/app`: Main app folder
