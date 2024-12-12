@@ -1,6 +1,7 @@
-/tmp
-/dataset
-/data
+tmp/
+dataset/
+data/
 all-data.db
 initial-data.db
 dataset-merged/
+datasets/

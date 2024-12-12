@@ -10,9 +10,7 @@ parser.add_argument("recordings", nargs='+',
                     help="List of recording directories to merge")
 args = parser.parse_args()
 
-shutil.copytree("./dataset/train", output_dir, dirs_exist_ok=True)
-shutil.copytree("./dataset/val", output_dir, dirs_exist_ok=True)
-shutil.copytree("./dataset/test", output_dir, dirs_exist_ok=True)
+os.makedirs(output_dir, exist_ok=False)
 
 for recording_dir in args.recordings:
     if not os.path.exists(output_dir):
