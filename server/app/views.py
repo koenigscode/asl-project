@@ -51,7 +51,7 @@ def upload_video(request):
         with tempfile.NamedTemporaryFile(delete=True, suffix='.mp4') as tmp_file:
             tmp_file.write(video_file.read())
             tmp_file_path = tmp_file.name
-            prediction = predict(tmp_file_path)
+            prediction = predict(tmp_file_path, word)
 
         if prediction is None:
             return JsonResponse({'error': "Couldn't detect any hand movement"}, status=400)

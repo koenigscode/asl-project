@@ -2,3 +2,4 @@
 # Ignore the processed and unprocessed dataset
 dataset/
 processed_dataset/
+recordings/
