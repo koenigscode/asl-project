@@ -1,10 +1,14 @@
+# Created with help of ChatGPT.
+# https://chatgpt.com/share/675abc48-38e4-8006-acee-4f85a5afb79f
+
 import shutil
 import argparse
 import os
 
-# Set up argument parser
-parser = argparse.ArgumentParser(description="Merge recording datasets into one directory.")
-parser.add_argument("recordings", nargs='+', help="List of recording directories to merge")
+parser = argparse.ArgumentParser(
+    description="Merge recording datasets into one directory.")
+parser.add_argument("recordings", nargs='+',
+                    help="List of recording directories to merge")
 args = parser.parse_args()
 
 # Create the target directory (dataset-merged)
@@ -22,4 +26,3 @@ for recording_dir in args.recordings:
     shutil.copytree(recording_dir, target_dir, dirs_exist_ok=True)
 
 print("Dataset merge complete.")
-
