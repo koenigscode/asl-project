@@ -34,6 +34,9 @@ if __name__ == "__main__":
                         help="List of clean_text to put into the intial dataset")
     args = parser.parse_args()
 
+    print(f"Using database {args.source_db}")
+    print(f"Creating database {args.target_db}")
+
     copy_db(args.source_db, args.target_db)
 
     conn = sqlite3.connect(args.target_db)

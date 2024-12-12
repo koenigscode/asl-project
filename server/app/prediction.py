@@ -53,8 +53,7 @@ def adjust_video_fps(video_path, target_fps=5):
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
     if total_frames > max_frames:
-        # dont exceed max frames
-        new_fps = total_frames / max_frames
+        new_fps = max(total_frames / max_frames, 1) 
     else:
         new_fps = target_fps
 
@@ -74,10 +73,12 @@ def adjust_video_fps(video_path, target_fps=5):
         ret, frame = cap.read()
         if not ret:
             break
-        if frame_index % (original_fps // new_fps) == 0:
+
+        if new_fps > 0 and frame_index % max(int(original_fps // new_fps), 1) == 0:
             out.write(frame)
         frame_index += 1
 
+    # Replace the original video
     os.replace(temp_video_path, video_path)
 
     cap.release()

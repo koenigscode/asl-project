@@ -2,4 +2,7 @@
 # Ignore the processed and unprocessed dataset
 dataset/
 processed_dataset/
+**/.ipynb_checkpoints/
+**/__pycache__/
+tmp
 recordings/
