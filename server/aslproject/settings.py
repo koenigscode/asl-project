@@ -130,17 +130,24 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "formatters": {
+        "asl-logger": {
+            "format": "[{asctime}] {levelname}: {message}",
+            "style": "{",
+        }
+    },
     "handlers": {
         "file": {
-            "level": "DEBUG",
+            "level": "INFO",
             "class": "logging.FileHandler",
+            "formatter": "asl-logger",
             "filename": BASE_DIR / "aslproject/debug.log",
         },
     },
     "loggers": {
         "django": {
             "handlers": ["file"],
-            "level": "DEBUG",
+            "level": "INFO",
             "propagate": True,
         },
     },
