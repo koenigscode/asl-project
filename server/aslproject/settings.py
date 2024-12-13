@@ -145,7 +145,7 @@ LOGGING = {
         },
     },
     "loggers": {
-        "django": {
+        "asl": {
             "handlers": ["file"],
             "level": "INFO",
             "propagate": True,
