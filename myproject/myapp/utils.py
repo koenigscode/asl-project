@@ -1,4 +1,3 @@
-import torch
 from django.utils import timezone
 from .models import TrainingJob, TrainingMetrics, TrainedModel
 from django.conf import settings

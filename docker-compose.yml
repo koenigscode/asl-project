@@ -20,3 +20,13 @@ services:
       - ./recordings:/recordings
     ports:
       - "8000:8000"
+  admin_ui:
+    build:
+      context: ./myproject
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./myproject:/myproject/myapp
+    environment:
+      - DEBUG=1 
