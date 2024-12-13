@@ -44,7 +44,6 @@ def get_landmarks(video_path, detector, show_landmarks=False):
             if cv.waitKey(50) & 0xFF == ord('q'):
                 break
     cap.release()
-    cv.destroyAllWindows()
     return result, num_frames
 
 
