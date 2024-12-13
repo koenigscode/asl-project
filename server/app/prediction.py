@@ -146,4 +146,6 @@ def predict(video_path, correct_class):
                 + f" with probability {predicted_probability}")
     logger.info("--------------------")
 
+    logger.info(f"User was supposed to sign: \"{correct_class}\", and it was recognized as: \"{words[predicted_class]}\"")
+
     return (words[predicted_class], predicted_probability)

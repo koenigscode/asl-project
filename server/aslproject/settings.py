@@ -141,7 +141,7 @@ LOGGING = {
             "level": "INFO",
             "class": "logging.FileHandler",
             "formatter": "asl-logger",
-            "filename": BASE_DIR / "aslproject/debug.log",
+            "filename": BASE_DIR / "asl_info.log",
         },
     },
     "loggers": {
