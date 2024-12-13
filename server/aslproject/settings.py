@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -143,10 +144,16 @@ LOGGING = {
             "formatter": "asl-logger",
             "filename": BASE_DIR / "asl_info.log",
         },
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "asl-logger",
+            "stream": sys.stdout,
+        },
     },
     "loggers": {
         "asl": {
-            "handlers": ["file"],
+            "handlers": ["file", "console"],
             "level": "INFO",
             "propagate": True,
         },
