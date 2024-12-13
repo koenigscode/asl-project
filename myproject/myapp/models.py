@@ -7,9 +7,9 @@ def validate_zip_file(value):
     if not value.name.endswith('.zip'):
         raise ValidationError('Only ZIP files are allowed.')
 
-def validate_pth_file(value):
-    if not value.name.endswith('.pth'):
-        raise ValidationError('Only pth files are allowed.')
+def validate_keras_file(value):
+    if not value.name.endswith('.keras'):
+        raise ValidationError('Only keras files are allowed.')
     
 class Dataset(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -35,7 +35,7 @@ class Dataset(models.Model):
 
 class TrainedModel(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    model_file = models.FileField(upload_to='trained_models/', validators=[validate_pth_file])
+    model_file = models.FileField(upload_to='trained_models/', validators=[validate_keras_file])
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -49,6 +49,8 @@ class TrainingJob(models.Model):
     completed_at = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=20, default='PENDING', editable=False)
     output_model = models.OneToOneField(TrainedModel, on_delete=models.SET_NULL, null=True, blank=True, related_name='output_from_job')
+    # TODO: Add a field to store the training metrics, which will be a JSON object, and will be added after we implement the training process
+
 
     def __str__(self):
         return f"Job {self.id} - {self.status}"
