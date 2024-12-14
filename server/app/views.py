@@ -1,4 +1,6 @@
 from django.http import HttpResponse, JsonResponse
+import subprocess
+import mimetypes
 from django.shortcuts import render
 import os
 from django.conf import settings
@@ -42,13 +44,23 @@ def study(request):
     return render(request, 'app/study.html', {'word': word, 'instruction_video': instruction_video})
 
 
+
+
 @csrf_exempt
 def upload_video(request):
     if request.method == 'POST' and request.FILES.get('video'):
         video_file = request.FILES['video']
         word = request.POST.get('word')
 
-        with tempfile.NamedTemporaryFile(delete=True, suffix='.mp4') as tmp_file:
+        mime_type, _ = mimetypes.guess_type(video_file.name)
+        if mime_type is None or not mime_type.startswith('video/'):
+            return JsonResponse({'error': 'Invalid recoding format'}, status=400)
+
+        file_ext = mimetypes.guess_extension(mime_type)
+        if file_ext is None:
+            return JsonResponse({'error': "Can't detect file extension for recording"}, status=400)
+
+        with tempfile.NamedTemporaryFile(delete=True, suffix=file_ext) as tmp_file:
             tmp_file.write(video_file.read())
             tmp_file_path = tmp_file.name
             prediction = predict(tmp_file_path, word)

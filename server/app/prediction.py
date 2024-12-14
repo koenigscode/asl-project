@@ -1,4 +1,6 @@
 import os
+from stopwatch import Stopwatch
+import subprocess
 import hashlib
 import shutil
 import tensorflow as tf
@@ -46,48 +48,25 @@ detector = ld.get_detector(DETECTOR_PATH)
 logger = logging.getLogger('asl')
 
 
-def adjust_video_fps(video_path, target_fps=5):
-    cap = cv2.VideoCapture(video_path)
-
-    original_fps = cap.get(cv2.CAP_PROP_FPS)
-    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-
-    if total_frames > max_frames:
-        new_fps = max(total_frames / max_frames, 1) 
-    else:
-        new_fps = target_fps
-
-    logger.info(f"Changed video to {new_fps} fps")
-
-    temp_video_path = f"{os.path.splitext(video_path)[0]}_temp.mp4"
-    out = cv2.VideoWriter(
-        temp_video_path,
-        cv2.VideoWriter_fourcc(*'mp4v'),
-        new_fps,
-        (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
-         int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+def preprocess_video(video_path, target_fps=5):
+    file_name,  _ = os.path.splitext(video_path)
+    output_path = f"{file_name}_reencoded.mp4"
+    sw = Stopwatch(2)
+    subprocess.run(
+        ["ffmpeg", "-i", video_path, "-c:v", "mjpeg", "-q:v", "5", "-r", str(target_fps), output_path],
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
     )
+    sw.stop()
+    logger.info(f"FFmpeg reencoding completed in {sw.duration} seconds")
 
-    frame_index = 0
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-            break
-
-        if new_fps > 0 and frame_index % max(int(original_fps // new_fps), 1) == 0:
-            out.write(frame)
-        frame_index += 1
-
-    # Replace the original video
-    os.replace(temp_video_path, video_path)
-
-    cap.release()
-    out.release()
+    return output_path
 
 
 def generate_random_hash(length=10):
     return hashlib.sha256(os.urandom(16)).hexdigest()[:length]
-
 
 def save_recording(video_path, correct_class):
     destination_dir = f'/recordings/{correct_class}'
@@ -104,8 +83,11 @@ def save_recording(video_path, correct_class):
 
 def predict(video_path, correct_class):
     video_X = []
-    adjust_video_fps(video_path, fps)
+    video_path = preprocess_video(video_path)
+    sw = Stopwatch(2)
     landmarks = ld.get_landmarks(video_path, detector)
+    sw.stop()
+    logger.info(f"Landmark detection completed in {sw.duration} seconds")
 
     prediction_X = []
 
@@ -131,7 +113,11 @@ def predict(video_path, correct_class):
         save_recording(video_path, correct_class)
         logger.info(f"Saved video to /recordings/{correct_class}/")
 
+    sw.reset()
+    sw.start()
     predictions = model.predict(np.array(prediction_X), verbose=0)
+    sw.stop()
+    logger.info(f"Prediction completed in {sw.duration} seconds")
 
     predicted_class = np.argmax(predictions)
     # Returns the maximum probability
