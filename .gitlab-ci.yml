@@ -33,5 +33,5 @@ build:
   script:
     - cd server
     - docker info
-    - docker build -f Dockerfile -t gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA .
+    - docker build -f Dockerfile -t gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA ..
     - docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA
