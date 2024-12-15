@@ -29,8 +29,6 @@ COPY . .
 
 RUN /venv/bin/python3 manage.py collectstatic --noinput
 
-RUN /venv/bin/python3 manage.py migrate
-
 EXPOSE 8000
 
 ENTRYPOINT ["/venv/bin/python3", "manage.py"]
