@@ -31,7 +31,7 @@ build:
     DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay2
   script:
-    - cd server
-    - docker info
-    - docker build -f Dockerfile -t gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA .
-    - docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA
+  - cd $CI_PROJECT_DIR 
+  - docker info
+  - docker build -f server/Dockerfile -t gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA .
+  - docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA
