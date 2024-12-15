@@ -15,6 +15,9 @@ RUN /venv/bin/pip install --upgrade pip
 RUN /venv/bin/pip install django opencv-python-headless tensorflow mediapipe python-dotenv whitenoise moviepy stopwatch.py
 
 WORKDIR /server
+ENV MODEL_NAME=draft_model
+ENV SAVE_RECORDINGS=True
+ENV DEBUG=True
 
 COPY . .
 
