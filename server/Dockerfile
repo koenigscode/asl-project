@@ -26,11 +26,12 @@ ENV MODEL_NAME=draft_model
 ENV SAVE_RECORDINGS=True
 ENV DEBUG=True
 
-COPY . .
 COPY ../models/draft_model.env /models/.env
 COPY ../models/draft_model.keras /models/.keras
+COPY . .
 
-RUN /venv/bin/python3 manage.py collectstatic --noinput
+
+RUN /venv/bin/python3 server/manage.py collectstatic --noinput
 
 EXPOSE 8000
 
