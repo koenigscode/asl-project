@@ -73,12 +73,12 @@ def padX(X, num_videos, highest_frame, num_features):
 def mainPipeline():
     words = ['deaf', 'eat', 'fish', 'friend', 'like', 'milk', 'nice', 'no', 'orange', 'teacher', 'want', 'what', 'where', 'yes']
     select_words = ['no', 'eat', 'teacher', 'want', 'fish']
-    path = '../preprocessing/dataset/'
+    path = './preprocessing/dataset/train'
     num_features = 126
     model_name = 'draft_model'
     fps = 20
 
-    X, y, num_videos, highest_frame, bad_videos = get_data(select_words, path, '../models/hand_landmarker.task')
+    X, y, num_videos, highest_frame, bad_videos = get_data(select_words, path, './models/hand_landmarker.task')
 
     print('Number of videos:', num_videos)
     print('Highest frame:', highest_frame)
@@ -120,12 +120,12 @@ def mainPipeline():
 
     model.fit(X_train, y_train, epochs=10, validation_data=(X_val, y_val))
 
-    model.save(f'../models/{model_name}.keras')
+    model.save(f'./models/{model_name}.keras')
 
-    with open(f"../models/{model_name}.env", "w") as file:
+    with open(f"./models/{model_name}.env", "w") as file:
         file.write(f"MAX_FRAMES={highest_frame}\n")
         file.write(f"NUM_FEATURES={num_features}\n")
-        #file.write(f"WORDS={",".join(select_words)} \n")
+        file.write(f"WORDS={','.join(select_words)}\n")
         file.write(f"FPS={fps}\n")
 
     ########################################################
@@ -145,3 +145,6 @@ def mainPipeline():
     print(model.predict(np.array([X_prediction])))
     print("should be", y_prediction)
     print("predicted", select_words[np.argmax(model.predict(np.array([X_prediction])))])
+
+if __name__ == "__main__":
+    mainPipeline()
