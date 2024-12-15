@@ -33,5 +33,5 @@ RUN /venv/bin/python3 manage.py collectstatic --noinput
 
 EXPOSE 8000
 
-ENTRYPOINT ["/venv/bin/python3", "server/manage.py"]
+ENTRYPOINT ["/venv/bin/python3", "manage.py"]
 CMD ["runserver", "0.0.0.0:8000"]
