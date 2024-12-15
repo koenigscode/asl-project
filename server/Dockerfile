@@ -31,7 +31,7 @@ COPY ../models/draft_model.keras /models/.keras
 COPY . .
 
 
-RUN /venv/bin/python3 server/manage.py collectstatic --noinput
+RUN /venv/bin/python3 manage.py collectstatic --noinput
 
 EXPOSE 8000
 
