@@ -7,6 +7,8 @@ RUN apt-get update && apt-get install -y \
     libglib2.0-0 \
     ffmpeg \
     python3-venv \
+    curl \
+    gsutil \  
     && rm -rf /var/lib/apt/lists/*
 
 RUN python3 -m venv /venv
@@ -21,11 +23,18 @@ VOLUME /tmp
 
 WORKDIR /server
 
+
 ENV MODEL_NAME=draft_model
 ENV SAVE_RECORDINGS=True
 ENV DEBUG=True
+ENV GCS_BUCKET_NAME=group4-asl-models
+ENV GCS_ENV_FILE_PATH=/.env  
+ENV GCS_KERAS_FILE_PATH=/.keras     
 
 COPY . .
+
+RUN gsutil cp gs://$GCS_BUCKET_NAME$GCS_ENV_FILE_PATH /server/.env
+RUN gsutil cp gs://$GCS_BUCKET_NAME$GCS_KERAS_FILE_PATH /server/.keras
 
 RUN /venv/bin/python3 manage.py collectstatic --noinput
 
