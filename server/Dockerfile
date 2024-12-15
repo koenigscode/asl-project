@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
     ffmpeg \
     python3-venv \
     curl \
-    gsutil \  
+    gsutil \
     && rm -rf /var/lib/apt/lists/*
 
 RUN python3 -m venv /venv
@@ -22,7 +22,6 @@ VOLUME /recordings
 VOLUME /tmp
 
 WORKDIR /server
-
 
 ENV MODEL_NAME=draft_model
 ENV SAVE_RECORDINGS=True
