@@ -27,8 +27,8 @@ ENV SAVE_RECORDINGS=True
 ENV DEBUG=True
 
 COPY . .
-COPY ../models/.env /models/.env   
-COPY ../models/.keras /models/.keras   
+COPY models/.env /models/.env   
+COPY models/.keras /models/.keras    
 
 
 RUN /venv/bin/python3 manage.py collectstatic --noinput
