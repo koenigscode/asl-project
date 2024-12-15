@@ -14,7 +14,13 @@ RUN python3 -m venv /venv
 RUN /venv/bin/pip install --upgrade pip
 RUN /venv/bin/pip install django opencv-python-headless tensorflow mediapipe python-dotenv whitenoise moviepy stopwatch.py
 
+VOLUME /app
+VOLUME /models
+VOLUME /recordings
+VOLUME /tmp
+
 WORKDIR /server
+
 ENV MODEL_NAME=draft_model
 ENV SAVE_RECORDINGS=True
 ENV DEBUG=True
@@ -27,4 +33,5 @@ RUN /venv/bin/python3 manage.py migrate
 
 EXPOSE 8000
 
-CMD ["/venv/bin/python3", "manage.py", "runserver", "0.0.0.0:8000"]
+ENTRYPOINT ["/venv/bin/python3", "manage.py"]
+CMD ["runserver", "0.0.0.0:8000"]
