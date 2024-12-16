@@ -1,15 +1,16 @@
-import landmark_detector as ld
+from app.landmark_detector import get_detector, get_landmarks
 import os
 import random
 import numpy as np
 import keras
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 from keras import layers
-
+from app.models import TrainingJob, Dataset, TrainedModel, models
+from app.shared_state import get_event
 
 def get_data(words, path, detector_path):
-    detector = ld.get_detector(detector_path)
+    detector = get_detector(detector_path)
 
     X = []
     y = []
@@ -29,7 +30,7 @@ def get_data(words, path, detector_path):
             
             try:
                 video_X = []
-                landmarks, current_frames = ld.get_landmarks(video_path, detector)
+                landmarks, current_frames = get_landmarks(video_path, detector)
                 
                 if len(landmarks) == 0:
                     bad_videos+=1
@@ -70,10 +71,17 @@ def padX(X, num_videos, highest_frame, num_features):
     return padded_X, mask
 
 
-def mainPipeline():
+def mainPipeline(job_id):
+
+    #here we will use the "job" variable to get the neccisary data from the db
+    #job = TrainingJob.objects.get(id=job_id)
+    #dataset = ForeignKey
+    #base_model
+    #hyperparameters
+
     words = ['deaf', 'eat', 'fish', 'friend', 'like', 'milk', 'nice', 'no', 'orange', 'teacher', 'want', 'what', 'where', 'yes']
     select_words = ['no', 'eat', 'teacher', 'want', 'fish']
-    path = './preprocessing/dataset/train'
+    path = './preprocessing/dataset/test'
     num_features = 126
     model_name = 'draft_model'
     fps = 20
@@ -147,4 +155,6 @@ def mainPipeline():
     print("predicted", select_words[np.argmax(model.predict(np.array([X_prediction])))])
 
 if __name__ == "__main__":
-    mainPipeline()
+    #mainPipeline()
+    print("pass")
+    pass

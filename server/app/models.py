@@ -23,7 +23,8 @@ class Dataset(models.Model):
             "└── dataset_name/ <br/>"
             "....├── train/ <br/>"
             "....├── test/ <br/>"
-            "....└── val/"
+            "....└── val/<br/><br/>"
+            "(this may take a moment to validate)"
         )
     )
     uploaded_at = models.DateTimeField(auto_now_add=True)
@@ -47,13 +48,13 @@ class TrainingJob(models.Model):
     started_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=20, default='PENDING', editable=False)
-    output_model = models.OneToOneField(TrainedModel, on_delete=models.SET_NULL, null=True, blank=True, related_name='output_from_job')
+    output_model = models.OneToOneField(TrainedModel, on_delete=models.SET_NULL, null=True, blank=True, related_name='output_from_job',editable=False)
     # TODO: Add a field to store the training metrics, which will be a JSON object, and will be added after we implement the training process
-
+    # TODO: Ensure that a trainingJob can't be deleted if it is 'IN_PROGRESS'
 
     def __str__(self):
         return f"Job {self.id} - {self.status}"
-    
+        
 class TrainingMetrics(models.Model):
     job = models.ForeignKey(TrainingJob, on_delete=models.CASCADE, related_name='metrics')
     epoch = models.IntegerField()
