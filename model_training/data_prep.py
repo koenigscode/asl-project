@@ -1,41 +1,50 @@
-import model_training.landmark_detector as ld
+import landmark_detector as ld
 import os
 import numpy as np
+from tqdm.notebook import tqdm
 
-def get_data(mode, words, path, detector_path):
+def get_data(words, path, detector_path):
     detector = ld.get_detector(detector_path)
 
-    training_X = []
-    training_y = []
+    X = []
+    y = []
 
     num_videos = 0
     highest_frame = 0
 
-    for word in words:
-        i = 1
-        video_path = path + mode + '/' + word + '/0001.mp4'
-        while os.path.exists(video_path):
+    bad_videos = 0
+
+    for word in tqdm(words):
+        word_path = os.path.join(path, word)
+        
+        video_files = [f for f in os.listdir(word_path) if f.endswith('.mp4')]
+        
+        for video_file in tqdm(video_files, desc=word):
+            video_path = os.path.join(word_path, video_file)
+            
             try:
                 video_X = []
                 landmarks, current_frames = ld.get_landmarks(video_path, detector)
+                
                 if len(landmarks) == 0:
-                    i += 1
-                    video_path = path + mode + '/' + word + '/' + str(i).zfill(4) + '.mp4'
+                    bad_videos+=1
                     continue
+                
                 if current_frames > highest_frame:
                     highest_frame = current_frames
+                
                 for frame in range(len(landmarks)):
                     features = np.array(landmarks[frame]).flatten()
                     video_X.append(features)
-                training_X.append(video_X)
-                training_y.append(words.index(word))
-                i += 1
+                
+                X.append(video_X)
+                y.append(words.index(word))
                 num_videos += 1
-                video_path = path + mode + '/' + word + '/' + str(i).zfill(4) + '.mp4'
+
             except Exception as e:
-                print(e)
-                break
-    return training_X, training_y, num_videos, highest_frame
+                print(f"Error processing video {video_file}: {e}")
+                continue 
+    return X, y, num_videos, highest_frame, bad_videos
 
 def padX(X, num_videos, highest_frame, num_features):
     padded_X = np.zeros((num_videos, highest_frame, num_features))
