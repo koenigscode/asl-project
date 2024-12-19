@@ -2,6 +2,12 @@ stages:
   - build
   - deploy
 
+workflow:
+   rules:
+     - if: $CI_MERGE_REQUEST_ID
+       when: always
+     - when: never
+
 variables:
   PROJECT_ID: asl-group4
   REGION: us-central1
@@ -25,6 +31,7 @@ build:
     DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay2
   script:
+    - cd server
     - docker info
-    - docker build -f server/Dockerfile -t gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA .
+    - docker build -f Dockerfile -t gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA .
     - docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA
