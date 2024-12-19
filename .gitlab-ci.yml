@@ -41,7 +41,7 @@ test:
   stage: test
   image: python:3.10
   before_script: 
-    - pip install mediapipe, numpy, tqdm, opencv-python --no-cache-dir
+    - pip install mediapipe numpy tqdm opencv-python --no-cache-dir
   script:
     - cd tests
     - python -m detector_test
