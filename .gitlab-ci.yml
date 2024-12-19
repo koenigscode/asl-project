@@ -40,6 +40,7 @@ build:
 test:
   stage: test
   image: python:latest
+  before_script: []
   script:
     - cd tests
     - python -m detector_test
