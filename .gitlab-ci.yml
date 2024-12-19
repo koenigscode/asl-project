@@ -41,6 +41,7 @@ test:
   stage: test
   image: python:3.10
   before_script: 
+    - pip install --upgrade pip setuptools wheel
     - pip install mediapipe numpy tqdm opencv-python --no-cache-dir
   script:
     - cd tests
