@@ -1,5 +1,6 @@
 stages:
   - build
+  - test
   - deploy
 
 workflow:
@@ -35,3 +36,11 @@ build:
     - docker info
     - docker build -f Dockerfile -t gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA .
     - docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA
+
+test:
+  stage: test
+  image: python:latest
+  script:
+    - cd tests
+    - python -m detector_test
+    - python -m data_prep_test
