@@ -40,7 +40,11 @@ build:
 test:
   stage: test
   image: python:latest
-  before_script: []
+  before_script: 
+    - pip install mediapipe
+    - pip install cv2
+    - pip install numpy
+    - pip install tqdm
   script:
     - cd tests
     - python -m detector_test
