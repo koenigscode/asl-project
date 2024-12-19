@@ -4,6 +4,8 @@ import shutil
 import tensorflow as tf
 from tensorflow import keras
 from keras.models import load_model
+import sys
+sys.path.insert(1, '../../model_training/landmark_detector.py')
 from . import landmark_detector as ld
 import numpy as np
 import cv2
@@ -14,9 +16,9 @@ MODEL_NAME = os.getenv('MODEL_NAME')
 if MODEL_NAME is None:
     raise ValueError("Environment variable 'MODEL_NAME' is not set.")
 
-DETECTOR_PATH = '/models/hand_landmarker.task'
-MODEL_PATH = f'/models/{MODEL_NAME}.keras'
-MODEL_SETTINGS = f'/models/{MODEL_NAME}.env'
+DETECTOR_PATH = '../models/hand_landmarker.task'
+MODEL_PATH = f'../models/{MODEL_NAME}.keras'
+MODEL_SETTINGS = f'../models/{MODEL_NAME}.env'
 load_dotenv(MODEL_SETTINGS)
 
 

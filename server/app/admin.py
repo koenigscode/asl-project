@@ -10,19 +10,10 @@ import os
 from threading import Thread
 from django.db import transaction
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from app.utils import validate_dataset_structure
 from app.shared_state import get_event, clear_event
-from model_training.asl_pipeline import mainPipeline
-import mediapipe as mp
-import numpy as np
-import cv2 as cv
-import keras
-from sklearn.model_selection import train_test_split
-from keras import layers
-from mediapipe.framework.formats import landmark_pb2
+
 #from tqdm.notebook import tqdm
-import random
 import time
 
 #Global variables
