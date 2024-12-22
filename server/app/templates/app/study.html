@@ -76,6 +76,20 @@
         toggleInstructionVideo(isChecked);
     });
 
+    window.addEventListener('keydown', (event) => {
+    if (event.code === 'Space') {
+        if (nextBtn.style.display === 'block') {
+            nextBtn.click();  
+        }
+        else if (startBtn.disabled === false) {
+            startBtn.click(); 
+        } else if (stopBtn.disabled === false) {
+            stopBtn.click();  
+        } 
+    }
+});
+
+
     async function initPreview() {
         try {
             stream = await navigator.mediaDevices.getUserMedia({video: true, audio: false});

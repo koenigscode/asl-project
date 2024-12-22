@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -127,21 +128,34 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "asl-logger": {
+            "format": "[{asctime}] {levelname}: {message}",
+            "style": "{",
+        }
+    },
+    "handlers": {
+        "file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "formatter": "asl-logger",
+            "filename": BASE_DIR / "asl_info.log",
+        },
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "asl-logger",
+            "stream": sys.stdout,
         },
     },
-    'loggers': {
-        'asl': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
+    "loggers": {
+        "asl": {
+            "handlers": ["file", "console"],
+            "level": "INFO",
+            "propagate": True,
         },
     },
 }
