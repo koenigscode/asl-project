@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install django opencv-python-headless tensorflow mediapipe python-dotenv whitenoise moviepy stopwatch.py tqdm scikit-learn TIME-python
+RUN pip install django opencv-python-headless tensorflow mediapipe python-dotenv whitenoise moviepy stopwatch.py tqdm scikit-learn TIME-python jupyter
 
 COPY . .
 

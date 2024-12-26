@@ -18,12 +18,12 @@ class Dataset(models.Model):
         help_text=(
             "Upload a ZIP file containing your dataset. "
             "The ZIP file must contain a single root directory, "
-            "which includes 'train', 'test', and 'val' folders. <br/><br/>"
+            "which includes folders for each word. <br/><br/>"
             "dataset_name.zip/ <br/>"
             "└── dataset_name/ <br/>"
-            "....├── train/ <br/>"
-            "....├── test/ <br/>"
-            "....└── val/<br/><br/>"
+            "....├── apple/ <br/>"
+            "....├── hello/ <br/>"
+            "....└── love/<br/><br/>"
             "(this may take a moment to validate)"
         )
     )
@@ -35,13 +35,14 @@ class Dataset(models.Model):
 
 class TrainedModel(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    model_file = models.FileField(upload_to='trained_models/', validators=[validate_keras_file])
+    model_file = models.FileField(upload_to='models/', validators=[validate_keras_file])
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
 
 class TrainingJob(models.Model):
+    name = models.CharField(max_length=100, unique=True)
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
     base_model = models.ForeignKey(TrainedModel, on_delete=models.SET_NULL, null=True, blank=True, related_name='training_jobs')
     hyperparameters = models.JSONField(default=dict, blank=True)

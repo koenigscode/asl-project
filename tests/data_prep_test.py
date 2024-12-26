@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 import sys
-sys.path.insert(1, '../model_training')
+sys.path.insert(1, '../server/model_training')
 import data_prep as prep
 
 class TestDataPrep(unittest.TestCase):

@@ -6,7 +6,6 @@ import mediapipe as mp
 from mediapipe.framework.formats import landmark_pb2
 import os
 import cv2 as cv
-import tensorflow
 
 def get_detector(model_path):
     # Check if the model exists

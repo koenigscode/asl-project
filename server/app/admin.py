@@ -10,8 +10,8 @@ import os
 from threading import Thread
 from django.db import transaction
 from django.conf import settings
-from app.utils import validate_dataset_structure
 from app.shared_state import get_event, clear_event
+from .retrain import retrain
 
 #from tqdm.notebook import tqdm
 import time
@@ -54,8 +54,12 @@ class DatasetAdmin(admin.ModelAdmin):
             return
 
         # Validate the dataset structure
-        is_valid, message = validate_dataset_structure(extract_to)
-        if not is_valid:
+        extracted_items = os.listdir(extract_to)
+    
+        # Filter directories
+        extracted_dirs = [item for item in extracted_items if os.path.isdir(os.path.join(extract_to, item))]
+
+        if len(extracted_dirs) != 1:
             # **Delete the uploaded ZIP file**
             obj.data_file.delete(save=False)
             # Delete the Dataset object from the database
@@ -64,8 +68,11 @@ class DatasetAdmin(admin.ModelAdmin):
             shutil.rmtree(extract_to, ignore_errors=True)
             # Display error message
             messages.set_level(request, messages.ERROR)
-            self.message_user(request, message, level=messages.ERROR)
+            self.message_user(request, "The ZIP file must contain a single root directory containing the dataset.", level=messages.ERROR)
             return
+        
+        obj.root_directory = os.path.join(extract_to, extracted_dirs[0])
+        obj.save()
 
         # If validation passes
         messages.set_level(request, messages.SUCCESS)
@@ -74,7 +81,7 @@ class DatasetAdmin(admin.ModelAdmin):
 
 @admin.register(TrainingJob)
 class TrainingJobAdmin(admin.ModelAdmin):
-    list_display = ('id', 'dataset', 'status', 'started_at', 'completed_at')
+    list_display = ('id', 'name', 'dataset', 'status', 'started_at', 'completed_at')
     list_filter = ('status',)
     search_fields = ('id', 'dataset__name')
     readonly_fields = ('started_at', 'completed_at')
@@ -159,7 +166,7 @@ class TrainingJobAdmin(admin.ModelAdmin):
         """Function to ensure database integrity when a thread is opened. """
         try:
             with transaction.atomic():  # Ensure database integrity
-                #mainPipeline(job_id)
+                retrain(job_id)
                 i = 0
                 while (i > 10):
                     print(i)
@@ -184,9 +191,9 @@ class TrainingJobAdmin(admin.ModelAdmin):
     
     def button(self, obj):
         if obj.status == 'PENDING':
-            return format_html('<a class="button" href="{}">Start</a>', f'start/{obj.id}')
+            return format_html('<a class="button" href="{}">Start</a>', f'start/{obj.id}/')
         elif obj.status == 'IN_PROGRESS':
-            return format_html('<a class="button" href="{}">Stop</a>', f'stop/{obj.id}')
+            return format_html('<a class="button" href="{}">Stop</a>', f'stop/{obj.id}/')
         elif obj.status == 'COMPLETED':
             return format_html('<a class="button" href="{}" disabled>Completed</a>', f'')
         else:
@@ -195,7 +202,7 @@ class TrainingJobAdmin(admin.ModelAdmin):
 
     button.allow_tags = True
 
-    list_display = ('id', 'dataset', 'status', 'started_at', 'completed_at', 'button')
+    list_display = ('id', 'name', 'dataset', 'status', 'started_at', 'completed_at', 'button')
 
 @admin.register(TrainedModel)
 class TrainedModelAdmin(admin.ModelAdmin):

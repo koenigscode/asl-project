@@ -1,7 +1,7 @@
 import unittest
 import os
 import sys
-sys.path.insert(1, '../model_training')
+sys.path.insert(1, '../server/model_training')
 import landmark_detector as ld
 
 class TestLandmarkDetector(unittest.TestCase):
