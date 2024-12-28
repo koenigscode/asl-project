@@ -14,7 +14,7 @@ import data_prep as prep
 
 
 def retrain(job_id):
-    detector_path = '../../models/hand_landmarker.task'
+    detector_path = './models/hand_landmarker.task'
     job = TrainingJob.objects.get(id=job_id)
     new_name = job.name
     dataset = job.dataset

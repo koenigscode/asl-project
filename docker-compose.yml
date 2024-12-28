@@ -17,6 +17,7 @@ services:
     volumes:
       - ./server:/app
       - ./models:/models
+      - ./model_training:/model_training
       - ./recordings:/recordings
       - ./tmp:/tmp
     ports:
