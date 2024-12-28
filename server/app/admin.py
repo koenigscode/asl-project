@@ -7,9 +7,12 @@ from django.shortcuts import redirect
 from django.contrib import messages
 import zipfile
 import os
+import matplotlib.pyplot as plt
+import tempfile
 from threading import Thread
 from django.db import transaction
 from django.conf import settings
+from django.http import HttpResponse
 from app.shared_state import get_event, clear_event
 from .retrain import retrain
 
@@ -206,6 +209,64 @@ class TrainingJobAdmin(admin.ModelAdmin):
 
 @admin.register(TrainedModel)
 class TrainedModelAdmin(admin.ModelAdmin):
-    list_display = ('name', 'uploaded_at')
+    list_display = ('name', 'accuracy_percentage', 'uploaded_at')
     readonly_fields = ('uploaded_at',)
+    search_fields = ('name',)
+    actions = ['create_accuracy_graph']
 
+    def accuracy_percentage(self, obj):
+        return f"{obj.accuracy * 100:.2f}%"
+    accuracy_percentage.short_description = 'Accuracy'
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        # Save model info as dotenv file
+        with open(os.path.join(settings.MEDIA_ROOT, 'models', obj.name + '.env'), 'w') as file:
+            file.write(f"MAX_FRAMES={obj.max_frames}\n")
+            file.write(f"NUM_FEATURES={obj.num_features}\n")
+            file.write(f"WORDS={obj.words}\n")
+            file.write(f"FPS={obj.fps}\n")
+            file.write(f"TEST_ACC={obj.accuracy}\n")
+            file.write(f'WORD_ACC="{obj.word_accuracy}"\n')
+
+    def create_accuracy_graph(self, request, queryset):
+        words = set()
+        model_accuracies = {}
+
+        # Collect all words and their accuracies
+        for model in queryset:
+            model_accuracies[model.name] = {}
+            for word, count in model.word_accuracy.items():
+                if word not in model_accuracies[model.name]:
+                    model_accuracies[model.name][word] = []
+                if count[1] != 0:
+                    model_accuracies[model.name][word].append(count[0]/count[1])
+                else:
+                    model_accuracies[model.name][word].append(0)
+                words.add(word)
+
+        words = sorted(words)
+
+        # Create the graph
+        plt.figure(figsize=(10, 5))
+        for model_name, accuracies in model_accuracies.items():
+            model_word_accuracies = [accuracies.get(word, 0) for word in words]
+            plt.plot(words, model_word_accuracies, label=model_name)
+
+        plt.xlabel('Words')
+        plt.ylabel('Accuracy')
+        plt.title('Accuracy by Word for Selected Models')
+        plt.xticks(rotation=45, ha='right')
+        plt.legend()
+        plt.tight_layout()
+
+        # Save the graph to a temporary file
+        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
+            plt.savefig(tmpfile.name)
+            plt.close()
+            tmpfile.seek(0)
+            response = HttpResponse(tmpfile.read(), content_type="image/png")
+            response['Content-Disposition'] = 'inline; filename="accuracy_by_word.png"'
+            return response
+
+    create_accuracy_graph.short_description = 'Create accuracy graph for selected models'

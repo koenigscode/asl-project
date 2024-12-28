@@ -19,7 +19,6 @@ def retrain(job_id):
     new_name = job.name
     dataset = job.dataset
     base_model = job.base_model
-    hyperparameters = job.hyperparameters
 
     # Get base model info
     model_path = base_model.model_file.path
@@ -28,7 +27,7 @@ def retrain(job_id):
     load_dotenv(model_setting)
     num_features = int(os.getenv('NUM_FEATURES'))
     select_words = os.getenv('WORDS').split(',')
-    fps = int(os.getenv('FPS'))
+    fps = float(os.getenv('FPS'))
 
     # Get dataset info
     dataset_path = dataset.root_directory
@@ -57,7 +56,7 @@ def retrain(job_id):
     # Save the model
     with tempfile.TemporaryDirectory() as temp_dir:
         model.save(f"{temp_dir}/{new_name}.keras")
-        trained_model = TrainedModel(name=new_name)
+        trained_model = TrainedModel(name=new_name, max_frames=highest_frame, num_features=num_features, accuracy=test_accuracy, words=','.join(select_words), fps=fps, word_accuracy=word_accuracy)
         trained_model.model_file.save(f"{new_name}.keras", File(open(f"{temp_dir}/{new_name}.keras", 'rb')))
         trained_model.save()
 

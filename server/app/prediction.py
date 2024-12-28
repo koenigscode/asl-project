@@ -41,7 +41,7 @@ words = WORDS.split(',')
 FPS = os.getenv('FPS')
 if FPS is None:
     raise ValueError("Environment variable 'FPS' is not set.")
-fps = int(FPS)
+fps = float(FPS)
 
 model = load_model(MODEL_PATH)
 detector = ld.get_detector(DETECTOR_PATH)

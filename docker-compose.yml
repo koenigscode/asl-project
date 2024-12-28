@@ -16,8 +16,6 @@ services:
     # wants to use docker during development.
     volumes:
       - ./server:/app
-      - ./models:/models
-      - ./model_training:/model_training
       - ./recordings:/recordings
       - ./tmp:/tmp
     ports:
