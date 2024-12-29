@@ -1,43 +1,45 @@
 from sklearn.model_selection import train_test_split
-import keras
 from tensorflow.keras.callbacks import EarlyStopping
-from app.models import TrainingJob, Dataset, TrainedModel, models
-from app.shared_state import get_event
+from app.models import TrainingJob, TrainedModel
 from dotenv import load_dotenv
 from django.core.files import File
+import keras
 import numpy as np
 import tempfile
 import os
 import sys
+
 sys.path.insert(1, 'model_training/')
 import data_prep as prep
 
 
+# Retrain a model based on a training job
 def retrain(job_id):
-    detector_path = './models/hand_landmarker.task'
-    job = TrainingJob.objects.get(id=job_id)
-    new_name = job.name
-    dataset = job.dataset
-    base_model = job.base_model
+    # Constants
+    DETECTOR_PATH = './models/hand_landmarker.task'
+    JOB = TrainingJob.objects.get(id=job_id)
+    NEW_NAME = JOB.name
+    DATASET = JOB.dataset
+    BASE_MODEL = JOB.base_model
 
     # Get base model info
-    model_path = base_model.model_file.path
-    base_model_name = base_model.name
-    model_setting = f'../models/{base_model_name}.env'
-    load_dotenv(model_setting)
-    num_features = int(os.getenv('NUM_FEATURES'))
-    select_words = os.getenv('WORDS').split(',')
-    fps = float(os.getenv('FPS'))
+    MODEL_PATH = BASE_MODEL.model_file.path
+    BASE_MODEL_NAME = BASE_MODEL.name
+    MODEL_SETTING = f'../models/{BASE_MODEL_NAME}.env'
+    load_dotenv(MODEL_SETTING)
+    NUM_FEATURES = int(os.getenv('NUM_FEATURES'))
+    SELECT_WORDS = os.getenv('WORDS').split(',')
+    FPS = float(os.getenv('FPS'))
 
     # Get dataset info
-    dataset_path = dataset.root_directory
+    DATASET_PATH = DATASET.root_directory
 
     # Load the base model
-    model = keras.models.load_model(model_path)
+    model = keras.models.load_model(MODEL_PATH)
 
     # Load, pad, and split the dataset
-    X, y, num_videos, highest_frame, bad_videos = prep.get_data(select_words, dataset_path, detector_path)
-    padded_X, mask = prep.padX(X, num_videos, highest_frame, num_features)
+    X, y, num_videos, highest_frame, bad_videos = prep.get_data(SELECT_WORDS, DATASET_PATH, DETECTOR_PATH)
+    padded_X, mask = prep.padX(X, num_videos, highest_frame, NUM_FEATURES)
     X_train, X_test, y_train, y_test = train_test_split(padded_X, y, test_size=0.2, random_state=42)
     X_train = np.array(X_train)
     X_test = np.array(X_test)
@@ -51,20 +53,21 @@ def retrain(job_id):
 
     # Evaluate the model
     test_loss, test_accuracy = model.evaluate(X_test, y_test)
-    word_accuracy = prep.get_word_accuracy(select_words, model, X_test, y_test)
+    word_accuracy = prep.get_word_accuracy(SELECT_WORDS, model, X_test, y_test)
 
     # Save the model
     with tempfile.TemporaryDirectory() as temp_dir:
-        model.save(f"{temp_dir}/{new_name}.keras")
-        trained_model = TrainedModel(name=new_name, max_frames=highest_frame, num_features=num_features, accuracy=test_accuracy, words=','.join(select_words), fps=fps, word_accuracy=word_accuracy)
-        trained_model.model_file.save(f"{new_name}.keras", File(open(f"{temp_dir}/{new_name}.keras", 'rb')))
+        model.save(f"{temp_dir}/{NEW_NAME}.keras")
+        trained_model = TrainedModel(name=NEW_NAME, max_frames=highest_frame, num_features=NUM_FEATURES, accuracy=test_accuracy, words=','.join(SELECT_WORDS), fps=FPS, word_accuracy=word_accuracy)
+        trained_model.model_file.save(f"{NEW_NAME}.keras", File(open(f"{temp_dir}/{NEW_NAME}.keras", 'rb')))
         trained_model.save()
 
-    with open(f"./models/{new_name}.env", "w") as file:
+    # Save the model settings
+    with open(f"./models/{NEW_NAME}.env", "w") as file:
         file.write(f"MAX_FRAMES={highest_frame}\n")
-        file.write(f"NUM_FEATURES={num_features}\n")
-        file.write(f"WORDS={','.join(select_words)}\n")
-        file.write(f"FPS={fps}\n")
+        file.write(f"NUM_FEATURES={NUM_FEATURES}\n")
+        file.write(f"WORDS={','.join(SELECT_WORDS)}\n")
+        file.write(f"FPS={FPS}\n")
         file.write(f"TEST_ACC={test_accuracy}\n")
         file.write(f'WORD_ACC="{word_accuracy}"\n')
 

@@ -3,6 +3,7 @@ import os
 import numpy as np
 from tqdm.notebook import tqdm
 
+# Function that processes videos and extracts landmarks using the landmark detector
 def get_data(words, path, detector_path):
     detector = ld.get_detector(detector_path)
 
@@ -14,6 +15,7 @@ def get_data(words, path, detector_path):
 
     bad_videos = 0
 
+    # Loop through each word using tqdm to show progress bar
     for word in tqdm(words):
         word_path = os.path.join(path, word)
         
@@ -24,6 +26,7 @@ def get_data(words, path, detector_path):
             
             try:
                 video_X = []
+                # Use the landmark detector function to get the landmarks and current frames
                 landmarks, current_frames = ld.get_landmarks(video_path, detector)
                 
                 if len(landmarks) == 0:
@@ -46,14 +49,18 @@ def get_data(words, path, detector_path):
                 continue 
     return X, y, num_videos, highest_frame, bad_videos
 
+
+# Function that pads the data to the highest frame and feature length
 def padX(X, num_videos, highest_frame, num_features):
     padded_X = np.zeros((num_videos, highest_frame, num_features))
     mask = np.ones((num_videos, highest_frame, num_features)) 
+
     for i in range(num_videos):
         video = X[i]
         for j in range(len(video)):
             frame = video[j]
             if len(frame) < num_features:
+                # Pad the frame with zeros if it is less than the number of features
                 padded_X[i, j, :] = np.pad(frame, (0, num_features - len(frame)), 'constant')
                 mask[i, j, len(frame):] = 0
             else:
@@ -62,6 +69,8 @@ def padX(X, num_videos, highest_frame, num_features):
             mask[i, len(video):, :] = 0
     return padded_X, mask
 
+
+# Function that gets the word accuracy of the model on the test set
 def get_word_accuracy(select_words, model, X_test, y_test):
     dic = {}
     for word in select_words:
@@ -70,6 +79,8 @@ def get_word_accuracy(select_words, model, X_test, y_test):
     for i in range(X_test.shape[0]):
         X_prediction = X_test[i,:,:]
         y_prediction = select_words[y_test[i]]
+
+        # Get the prediction of the model and get the word with the highest probability
         prediction = select_words[np.argmax(model.predict(np.array([X_prediction]), verbose=0))]
         if y_prediction == prediction:
             dic[y_prediction][0] += 1

@@ -15,20 +15,19 @@ from django.conf import settings
 from django.http import HttpResponse
 from app.shared_state import get_event, clear_event
 from .retrain import retrain
-
-#from tqdm.notebook import tqdm
 import time
 
 #Global variables
 MAX_EXTRACT_SIZE = 10000000000
 current_training_thread = None
 
-#Models
 
+# Admin panel for the Dataset model
 @admin.register(Dataset)
 class DatasetAdmin(admin.ModelAdmin):
     list_display = ('name', 'uploaded_at')
 
+    # Customize the form for adding/editing Dataset to include the data_file field
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         zip_path = obj.data_file.path
@@ -63,7 +62,7 @@ class DatasetAdmin(admin.ModelAdmin):
         extracted_dirs = [item for item in extracted_items if os.path.isdir(os.path.join(extract_to, item))]
 
         if len(extracted_dirs) != 1:
-            # **Delete the uploaded ZIP file**
+            # Delete the uploaded ZIP file
             obj.data_file.delete(save=False)
             # Delete the Dataset object from the database
             obj.delete()
@@ -82,20 +81,23 @@ class DatasetAdmin(admin.ModelAdmin):
         self.message_user(request, 'Dataset uploaded and extracted successfully.', level=messages.SUCCESS)
 
 
+# Admin panel for the TrainingJob model
 @admin.register(TrainingJob)
 class TrainingJobAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'dataset', 'status', 'started_at', 'completed_at')
+    list_display = ('id', 'name', 'dataset', 'status', 'started_at', 'completed_at', 'button')
     list_filter = ('status',)
     search_fields = ('id', 'dataset__name')
     readonly_fields = ('started_at', 'completed_at')
 
     # Customize the form for adding/editing TrainingJob
     def get_readonly_fields(self, request, obj=None):
-        if obj:  # editing an existing object
+        # editing an existing object
+        if obj:
             if obj.status != 'PENDING':
                 return  ('dataset', 'base_model', 'hyperparameters',  'status', 'output_model' ) + self.readonly_fields
         return self.readonly_fields
 
+    # Add custom start and stop buttons to the admin panel
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
@@ -104,8 +106,10 @@ class TrainingJobAdmin(admin.ModelAdmin):
         ]
         return custom_urls + urls
 
+    # Start the training job
     def start_job(self, request, job_id):
         try:
+            # Global variable to check if another training job is already running
             global current_training_thread
 
             # Here we get the TrainingJob object as a variable and change its status to 'IN_PROGRESS'
@@ -115,7 +119,7 @@ class TrainingJobAdmin(admin.ModelAdmin):
 
             if current_training_thread is None:
                 # Start the training job in a separate thread
-                get_event(job_id) # Create a stop event for the job
+                get_event(job_id)
                 current_training_thread = Thread(target=self._train_model_in_background, args=(request, job_id,))
                 current_training_thread.start()
                 self.message_user(request, "Training job started in background.", level=messages.SUCCESS)
@@ -128,23 +132,29 @@ class TrainingJobAdmin(admin.ModelAdmin):
             job.save()
             self.message_user(request, str("An error occured, error message: " + e), level=messages.ERROR)
 
-        return redirect('/admin/app/trainingjob/')  # Redirect back to the change list
+        # Redirect back to the change list
+        return redirect('/admin/app/trainingjob/')
     
+    # Stop the training job
     def stop_job(self, request, job_id):
         """Stop the job by setting the stop flag and returning to PENDING."""
         try:
+            # Global variable to check if another training job is already running
             global current_training_thread
 
             job = TrainingJob.objects.get(id=job_id)
 
+            # Check if the job is currently running
             if job.status != 'IN_PROGRESS':
                 self.message_user(request, "The job is not currently running.", level=messages.WARNING)
                 return redirect('/admin/app/trainingjob/')
 
             # Wait for the training thread to stop
             if current_training_thread is not None and current_training_thread.is_alive():
-                    get_event(job_id).set() # Set the stop event
-                    current_training_thread.join() # Wait for the thread to stop, which should happen promptly because of the stop flag
+                    # Set the stop event
+                    get_event(job_id).set()
+                    # Wait for the thread to stop, which should happen promptly because of the stop flag
+                    current_training_thread.join()
             else:
                 self.message_user(request, "No training job is currently running.", level=messages.WARNING)
                 
@@ -152,7 +162,8 @@ class TrainingJobAdmin(admin.ModelAdmin):
             # Reset job status to 'PENDING' after the job is stopped
             job.status = 'PENDING'
             job.save()  
-            clear_event(job_id) # Clear the stop event
+            # Clear the stop event
+            clear_event(job_id)
             # Depending on the implementation, we may want to delete the output model file here
             
             # Display success message
@@ -163,12 +174,15 @@ class TrainingJobAdmin(admin.ModelAdmin):
             job.save()
             self.message_user(request, f"An error occurred: {e}", level=messages.ERROR)
 
-        return redirect('/admin/app/trainingjob/')  # Redirect back to the change list        
+        # Redirect back to the change list 
+        return redirect('/admin/app/trainingjob/')       
     
+    # Function to train the model in the background
     def _train_model_in_background(self, request, job_id):
         """Function to ensure database integrity when a thread is opened. """
         try:
-            with transaction.atomic():  # Ensure database integrity
+            # Ensure database integrity
+            with transaction.atomic():
                 retrain(job_id)
                 i = 0
                 while (i > 10):
@@ -192,6 +206,7 @@ class TrainingJobAdmin(admin.ModelAdmin):
             current_training_thread = None
     
     
+    # Add a custom button to the admin panel to start or stop the training job
     def button(self, obj):
         if obj.status == 'PENDING':
             return format_html('<a class="button" href="{}">Start</a>', f'start/{obj.id}/')
@@ -205,8 +220,8 @@ class TrainingJobAdmin(admin.ModelAdmin):
 
     button.allow_tags = True
 
-    list_display = ('id', 'name', 'dataset', 'status', 'started_at', 'completed_at', 'button')
 
+# Admin panel for the TrainedModel model
 @admin.register(TrainedModel)
 class TrainedModelAdmin(admin.ModelAdmin):
     list_display = ('name', 'accuracy_percentage', 'uploaded_at')
@@ -214,10 +229,12 @@ class TrainedModelAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     actions = ['create_accuracy_graph']
 
+    # Display accuracy as a percentage
     def accuracy_percentage(self, obj):
         return f"{obj.accuracy * 100:.2f}%"
     accuracy_percentage.short_description = 'Accuracy'
 
+    # Customize the form for adding/editing TrainedModel to include the model_file field
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         # Save model info as dotenv file
@@ -229,6 +246,7 @@ class TrainedModelAdmin(admin.ModelAdmin):
             file.write(f"TEST_ACC={obj.accuracy}\n")
             file.write(f'WORD_ACC="{obj.word_accuracy}"\n')
 
+    # Create a graph of the accuracy by word for the selected models
     def create_accuracy_graph(self, request, queryset):
         words = set()
         model_accuracies = {}

@@ -2,14 +2,17 @@ from django.db import models
 from django.core.exceptions import ValidationError
 
 
+# Custom validator to ensure that the uploaded file is a ZIP file
 def validate_zip_file(value):
     if not value.name.endswith('.zip'):
         raise ValidationError('Only ZIP files are allowed.')
 
+# Custom validator to ensure that the uploaded file is a Keras model file
 def validate_keras_file(value):
     if not value.name.endswith('.keras'):
         raise ValidationError('Only keras files are allowed.')
     
+# Dataset model to store the uploaded dataset
 class Dataset(models.Model):
     name = models.CharField(max_length=100, unique=True)
     data_file = models.FileField(
@@ -33,6 +36,7 @@ class Dataset(models.Model):
     def __str__(self):
         return self.name
 
+# TrainedModel model to store the trained models
 class TrainedModel(models.Model):
     name = models.CharField(max_length=100, unique=True)
     model_file = models.FileField(upload_to='models/', validators=[validate_keras_file])
@@ -47,6 +51,7 @@ class TrainedModel(models.Model):
     def __str__(self):
         return self.name
 
+# TrainingJob model to store the training jobs
 class TrainingJob(models.Model):
     name = models.CharField(max_length=100, unique=True)
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)

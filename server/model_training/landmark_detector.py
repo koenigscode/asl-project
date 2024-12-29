@@ -18,23 +18,34 @@ def get_detector(model_path):
     return mp.tasks.vision.HandLandmarker.create_from_options(options)
 
 def get_landmarks(video_path, detector, show_landmarks=False):
+
     cap = cv.VideoCapture(video_path)
     if not cap.isOpened():
         raise FileNotFoundError("The video file not found")
+    
     result = []
     num_frames = int(cap.get(cv.CAP_PROP_FRAME_COUNT))
+
+    # Loop through the video frames
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
             break
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
+
+        # Detect the hand landmarks
         detection_result = detector.detect(mp_image)
         hand_landmarks = detection_result.hand_landmarks
+
+        # Append the landmarks to the result list
         if hand_landmarks:
             result.append([[[landmark.x, landmark.y, landmark.z] for landmark in hand] for hand in hand_landmarks])
+        
+        # Show the landmarks if needed
         if show_landmarks:
             if hand_landmarks:
                 for hand_landmark in hand_landmarks:
+                    # Use the mediapipe drawing utilities to draw the landmarks
                     normal_list = landmark_pb2.NormalizedLandmarkList()
                     normal_list.landmark.extend([
                         landmark_pb2.NormalizedLandmark(x=landmark.x, y=landmark.y, z=landmark.z) for landmark in hand_landmark
