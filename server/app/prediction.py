@@ -3,51 +3,56 @@ from stopwatch import Stopwatch
 import subprocess
 import hashlib
 import shutil
-import tensorflow as tf
-from tensorflow import keras
 from keras.models import load_model
-from . import landmark_detector as ld
+import landmark_detector as ld
 import numpy as np
-import cv2
 import logging
 from dotenv import load_dotenv
 
+# Get the model name from the environment variable
 MODEL_NAME = os.getenv('MODEL_NAME')
 if MODEL_NAME is None:
     raise ValueError("Environment variable 'MODEL_NAME' is not set.")
 
-DETECTOR_PATH = '/models/hand_landmarker.task'
-MODEL_PATH = f'/models/{MODEL_NAME}.keras'
-MODEL_SETTINGS = f'/models/{MODEL_NAME}.env'
+# Set the paths to the model, the landmark detector, and the model settings
+DETECTOR_PATH = './models/hand_landmarker.task'
+MODEL_PATH = f'./models/{MODEL_NAME}.keras'
+MODEL_SETTINGS = f'./models/{MODEL_NAME}.env'
+# Load the model settings
 load_dotenv(MODEL_SETTINGS)
 
-
+# Get the number of features from the environment variables from the model settings
 NUM_FEATURES = os.getenv('NUM_FEATURES')
 if NUM_FEATURES is None:
     raise ValueError("Environment variable 'NUM_FEATURES' is not set.")
 num_features = int(NUM_FEATURES)
 
+# Get the maximum number of frames from the environment variables from the model settings
 MAX_FRAMES = os.getenv('MAX_FRAMES')
 if MAX_FRAMES is None:
     raise ValueError("Environment variable 'MAX_FRAMES' is not set.")
 max_frames = int(MAX_FRAMES)
 
+# Get the words from the environment variables from the model settings
 WORDS = os.getenv('WORDS')
 if WORDS is None:
     raise ValueError("Environment variable 'WORDS' is not set.")
 words = WORDS.split(',')
 
+# Get the FPS from the environment variables from the model settings
 FPS = os.getenv('FPS')
 if FPS is None:
     raise ValueError("Environment variable 'FPS' is not set.")
-fps = int(FPS)
+fps = float(FPS)
 
 model = load_model(MODEL_PATH)
 detector = ld.get_detector(DETECTOR_PATH)
 
+# Set up logging
 logger = logging.getLogger('asl')
 
 
+# Function to preprocess the video to a different frame rate
 def preprocess_video(video_path, target_fps=5):
     file_name,  _ = os.path.splitext(video_path)
     output_path = f"{file_name}_reencoded.mp4"
@@ -64,10 +69,11 @@ def preprocess_video(video_path, target_fps=5):
 
     return output_path
 
-
+# Function to generate a random hash for the video name
 def generate_random_hash(length=10):
     return hashlib.sha256(os.urandom(16)).hexdigest()[:length]
 
+# Function to save the recording to the /recordings directory
 def save_recording(video_path, correct_class):
     destination_dir = f'/recordings/{correct_class}'
     os.makedirs(destination_dir, exist_ok=True)
@@ -80,7 +86,7 @@ def save_recording(video_path, correct_class):
     logger.info(f"Saved recording to {destination}")
     return destination
 
-
+# Function to predict the sign from a video using landmark detector and the model
 def predict(video_path, correct_class):
     video_X = []
     video_path = preprocess_video(video_path)

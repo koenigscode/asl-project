@@ -1,10 +1,12 @@
 import unittest
 import numpy as np
 import sys
-sys.path.insert(1, '../model_training')
+sys.path.insert(1, '../server/model_training')
 import data_prep as prep
 
+# Test cases for data_prep.py
 class TestDataPrep(unittest.TestCase):
+    # Test if the function read_files returns the correct output (not None)
     def test_get_data(self):
         words = ['no', 'teacher']
         path = '../preprocessing/dataset/'
@@ -19,6 +21,7 @@ class TestDataPrep(unittest.TestCase):
         self.assertGreater(num_videos, 0)
         self.assertGreater(highest_frame, 0)
     
+    # Test if the function read_files raises an exception when the path is invalid
     def test_get_data_invalid_videopath(self):
         words = ['no', 'teacher']
         path = '../invalid/videopath/'
@@ -26,6 +29,7 @@ class TestDataPrep(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             prep.get_data(words, path, detector_path)
     
+    # Test if the function read_files raises an exception when using invalid words
     def test_get_data_invalid_words(self):
         words = ['invalid', 'words']
         path = '../preprocessing/dataset/'
@@ -33,6 +37,7 @@ class TestDataPrep(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             prep.get_data(words, path, detector_path)
 
+    # Test if the function padX returns the correct output (not None)
     def test_padX(self):
         X = [[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10], [13, 14, 15]]]
         expected_padded_X = [[[1, 2, 3], [4, 5, 6], [0, 0, 0]], [[7, 8, 9], [10, 0, 0], [13, 14, 15]]]
