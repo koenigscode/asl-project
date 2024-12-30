@@ -94,7 +94,7 @@ class TrainingJobAdmin(admin.ModelAdmin):
         # editing an existing object
         if obj:
             if obj.status != 'PENDING':
-                return  ('dataset', 'base_model', 'hyperparameters',  'status', 'output_model' ) + self.readonly_fields
+                return  ('dataset', 'base_model',  'status', 'output_model' ) + self.readonly_fields
         return self.readonly_fields
 
     # Add custom start and stop buttons to the admin panel
