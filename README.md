@@ -69,3 +69,31 @@ Only videos where hand landmarks were detected are saved.
     - `server/app/templates`: HTML templates
     - `server/static`: Static files (Videos to show on frontend). Will be collected to `server/staticfiles` during the Docker build, and served with whitenoise.
     - `server/Dockerfile` Dockerfile for Django - for development, use `docker-compose.yml` instead
+
+
+## Attendance table
+
+Here, we tracked our meetings every week, as well as the attendance of each member to those meetings.
+An 'x' marks that the person was present, a '/' marks a tardy, and a ' ' marks an absence.
+
+| Week | Date           | Adam | Parisa | Kale | Sofia | David | Teo | Notes                                          |
+| ---- | -------------- | ---- | ------ | ---- | ----- | ----- | --- | ---------------------------------------------- |
+| 45   | Nov 8th, 2024  | x    | x      | x    | x     | x     | x   |                                                |
+| 46   | Nov 11th, 2024 | x    | x      | x    | x     | x     | x   |                                                |
+| 46   | Nov 14th, 2024 | x    | x      | x    | x     | x     | x   |                                                |
+| 47   | Nov 19th, 2024 | x    | x      | x    | x     | x     | x   |                                                |
+| 47   | Nov 21th, 2024 | x    | x      | x    | x     | x     | x   |                                                |
+| 47   | Nov 22nd, 2024 | x    | x      | x    | x     | /     | x   |                                                |
+| 48   | Nov 28th, 2024 | x    | x      | x    | x     | x     | x   |                                                |
+| 48   | Nov 29th, 2024 | x    | x      | x    | x     | x     | x   |                                                |
+| 49   | Dec 5th, 2024  | x    | x      | x    | x     | x     | x   |                                                |
+| 49   | Dec 6th, 2024  | x    | x      | x    | x     | /     | x   |                                                |
+| 50   | Dec 12th, 2024 | x    | x      | x    | x     |       | x   | David had a full day event for another course  |
+| 50   | Dec 13th, 2024 | x    | x      | x    | x     | x     | x   |                                                |
+| 51   | Dec 20th, 2024 | x    | x      | x    | x     | x     | x   |                                                |
+| 51   | Dec 21st, 2024 | x    | x      | x    | x     | x     | x   |                                                |
+| 52   | Dec 26th, 2024 | x    | x      | x    | x     | x     | x   |                                                |
+| 52   | Dec 27th, 2024 | x    | x      | x    | x     | x     |     | Teo wasn't available due to other appointments |
+| 1    | Jan 2nd, 2025  | x    | x      | x    | x     | x     | x   |                                                |
+| 1    | Jan 3rd, 2025  | x    | x      | x    | x     | x     | x   |                                                |
+
