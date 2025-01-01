@@ -14,9 +14,11 @@ def get_data(words, path, detector_path):
     highest_frame = 0
 
     bad_videos = 0
+    print("data prep")
 
     # Loop through each word using tqdm to show progress bar
     for word in tqdm(words):
+        print(word)
         word_path = os.path.join(path, word)
         
         video_files = [f for f in os.listdir(word_path) if f.endswith('.mp4')]
