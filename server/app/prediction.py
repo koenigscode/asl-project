@@ -7,19 +7,14 @@ from keras.models import load_model
 import landmark_detector as ld
 import numpy as np
 import logging
+from .models import TrainedModel
 from dotenv import load_dotenv
-
-# Get the model name from the environment variable
-MODEL_NAME = os.getenv('MODEL_NAME')
-if MODEL_NAME is None:
-    raise ValueError("Environment variable 'MODEL_NAME' is not set.")
 
 # Set the paths to the model, the landmark detector, and the model settings
 DETECTOR_PATH = './models/hand_landmarker.task'
-MODEL_PATH = f'./models/{MODEL_NAME}.keras'
-MODEL_SETTINGS = f'./models/{MODEL_NAME}.env'
 # Load the model settings
-load_dotenv(MODEL_SETTINGS)
+
+load_dotenv(TrainedModel.get_active_model_path().rstrip(".keras") + ".env")
 
 # Get the number of features from the environment variables from the model settings
 NUM_FEATURES = os.getenv('NUM_FEATURES')
@@ -45,7 +40,6 @@ if FPS is None:
     raise ValueError("Environment variable 'FPS' is not set.")
 fps = float(FPS)
 
-model = load_model(MODEL_PATH)
 detector = ld.get_detector(DETECTOR_PATH)
 
 # Set up logging
@@ -88,6 +82,8 @@ def save_recording(video_path, correct_class):
 
 # Function to predict the sign from a video using landmark detector and the model
 def predict(video_path, correct_class):
+    TrainedModel.change_model()
+    model = TrainedModel.model
     video_X = []
     video_path = preprocess_video(video_path)
     sw = Stopwatch(2)

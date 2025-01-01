@@ -1,6 +1,9 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from keras.models import load_model
+import logging
 
+logger = logging.getLogger('asl')
 
 # Custom validator to ensure that the uploaded file is a ZIP file
 def validate_zip_file(value):
@@ -47,9 +50,32 @@ class TrainedModel(models.Model):
     fps = models.FloatField(null=True, blank=True)
     word_accuracy = models.JSONField(default=dict, blank=True, help_text='Word accuracy in the model')
     uploaded_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=False, help_text="Set this model as the one in use")
+    model = None
+
+    @classmethod
+    def change_model(cls):
+        active_model = cls.get_active_model_path()
+        cls.model = load_model(active_model)
+        print(f"Model '{active_model}' loaded")
+        return cls.model
+
+    @classmethod
+    def get_active_model_path(cls):
+        active_model = cls.objects.filter(is_active=True).first()
+        if not active_model:
+            logger.error("No active model found")
+        return active_model.model_file.path
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        # disable other models
+        if self.is_active:
+            TrainedModel.objects.filter(is_active=True).update(is_active=False)
+        super().save(*args, **kwargs)
+        self.change_model()
 
 # TrainingJob model to store the training jobs
 class TrainingJob(models.Model):
