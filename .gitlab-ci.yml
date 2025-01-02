@@ -36,3 +36,17 @@ build:
     - docker info
     - docker build -f Dockerfile -t gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA .
     - docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA
+
+test:
+  stage: test
+  tags:
+    - docker-build
+  image: python:3.11-slim
+  script:
+    - pip install coverage django
+    - python -m coverage run manage.py test tests --pattern="*_test.py"
+    - python -m coverage report -m --ignore-errors
+    - python -m coverage xml
+  artifacts:
+    paths:
+      - coverage.xml
