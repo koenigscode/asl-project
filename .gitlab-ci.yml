@@ -44,6 +44,7 @@ test:
   image: python:3.11-slim
   before_script:
     - pip install coverage django
+    - cd server
   script:
     - python -m coverage run manage.py test tests --pattern="*_test.py"
     - python -m coverage report -m --ignore-errors
