@@ -42,8 +42,9 @@ test:
   tags:
     - docker-build
   image: python:3.11-slim
-  script:
+  before_script:
     - pip install coverage django
+  script:
     - python -m coverage run manage.py test tests --pattern="*_test.py"
     - python -m coverage report -m --ignore-errors
     - python -m coverage xml
