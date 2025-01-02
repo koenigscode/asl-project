@@ -26,7 +26,6 @@ ENV MODEL_NAME=draft_model
 ENV SAVE_RECORDINGS=True
 ENV DEBUG=True
 
-COPY models /models
 COPY server /server
 
 RUN /venv/bin/python3 manage.py collectstatic --noinput
