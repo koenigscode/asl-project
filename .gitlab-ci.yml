@@ -43,7 +43,8 @@ test:
     - docker-build
   image: python:3.11-slim
   before_script:
-    - pip install coverage django
+    - pip install coverage django opencv-python-headless tensorflow mediapipe python-dotenv whitenoise moviepy stopwatch.py tqdm scikit-learn TIME-python jupyter
+    - set MODEL_NAME=draft_model
     - cd server
   script:
     - python -m coverage run manage.py test tests --pattern="*_test.py"
