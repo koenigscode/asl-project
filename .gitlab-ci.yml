@@ -41,7 +41,7 @@ test:
   stage: test
   tags:
     - docker-build
-  image: docker:26
+  image: google/cloud-sdk:latest
   services:
     - docker:dind
   variables:
@@ -51,10 +51,9 @@ test:
     - cd server
   script:
     - docker login $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
-    - docker build -f Dockerfile -t testing_container .
-    - docker run --rm testing_container coverage run manage.py test tests --pattern="*_test.py"
-    - docker run --rm testing_container coverage report -m --ignore-errors
-    - docker run --rm testing_container coverage xml
+    - docker run --rm gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA coverage run manage.py test tests --pattern="*_test.py"
+    - docker run --rm gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA coverage report -m --ignore-errors
+    - docker run --rm gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA coverage xml
   artifacts:
     paths:
       - server/coverage.xml
