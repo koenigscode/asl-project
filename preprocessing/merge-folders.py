@@ -1,3 +1,19 @@
+"""
+File: merge-folders.py
+Description: Preprocessing script that alters the original dataset into usable data to train the models.
+
+Contributors:
+Michael Koenig
+
+Created: 2024-12-12
+Last Modified: 2024-12-12
+
+Project: A Sign From Above
+URL: https://git.chalmers.se/courses/dit826/2024/group4
+
+License: MIT License (see LICENSE file for details)
+"""
+
 import shutil
 import argparse
 import os

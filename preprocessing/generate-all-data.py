@@ -1,3 +1,19 @@
+"""
+File: generate-all-data.py
+Description: Preprocessing script that alters the original dataset into usable data to train the models.
+
+Contributors:
+Michael Koenig
+
+Created: 2024-11-19
+Last Modified: 2024-11-19
+
+Project: A Sign From Above
+URL: https://git.chalmers.se/courses/dit826/2024/group4
+
+License: MIT License (see LICENSE file for details)
+"""
+
 import sqlite3
 import json
 import os
@@ -60,6 +76,7 @@ def insert_data(conn, data, data_type):
     conn.commit()
 
 
+# Get the top 20 signs/words with the highest amount of videos
 def get_most_common_signs(conn):
     cursor = conn.cursor()
 

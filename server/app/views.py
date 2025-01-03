@@ -1,3 +1,20 @@
+"""
+File: views.py
+Description: Code that defines functionality for the different url paths.
+
+Contributors:
+Michael Koenig
+Sofia Serbina
+
+Created: 2024-11-27
+Last Modified: 2024-12-29
+
+Project: A Sign From Above
+URL: https://git.chalmers.se/courses/dit826/2024/group4
+
+License: MIT License (see LICENSE file for details)
+"""
+
 from django.http import JsonResponse
 import mimetypes
 from django.shortcuts import render
@@ -66,6 +83,8 @@ def upload_video(request):
         # Check the prediction result
         if prediction is None:
             return JsonResponse({'error': "Couldn't detect any hand movement"}, status=400)
+        elif prediction[0] is None:
+            return JsonResponse({'error': "Couldn't detect any sign"}, status=400)
         elif prediction[0] == word:
             result = "Correctly signed!"
         else:

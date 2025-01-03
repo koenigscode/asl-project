@@ -1,3 +1,19 @@
+"""
+File: shared_state.py
+Description: Source code which allows the different threads in the admin UI to communicate.
+
+Contributors:
+David Schoen
+
+Created: 2024-12-15
+Last Modified: 2024-12-15
+
+Project: A Sign From Above
+URL: https://git.chalmers.se/courses/dit826/2024/group4
+
+License: MIT License (see LICENSE file for details)
+"""
+
 # shared_state.py
 from threading import Event
 
