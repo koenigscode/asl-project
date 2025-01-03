@@ -1,3 +1,22 @@
+"""
+File: prediction.py
+Description: Source code which combines landmark detection and a trained LSTM model.
+This provides functions which will be used to get a prediction based on the user input.
+
+Contributors:
+Michael Koenig
+Teo Portase
+Parisa Babaei
+
+Created: 2024-12-08
+Last Modified: 2025-01-01
+
+Project: A Sign From Above
+URL: https://git.chalmers.se/courses/dit826/2024/group4
+
+License: MIT License (see LICENSE file for details)
+"""
+
 import os
 from stopwatch import Stopwatch
 import subprocess

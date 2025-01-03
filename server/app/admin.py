@@ -1,3 +1,21 @@
+"""
+File: admin.py
+Description: Source code for functionalities found on the admin UI, ( /admin ). Largely, training models.
+
+Contributors:
+Sofia Serbina
+Parisa Babaei
+David Schoen
+
+Created: 2024-11-27
+Last Modified: 2024-12-30
+
+Project: A Sign From Above
+URL: https://git.chalmers.se/courses/dit826/2024/group4
+
+License: MIT License (see LICENSE file for details)
+"""
+
 import shutil
 from django.contrib import admin
 from .models import Dataset, TrainingJob, TrainedModel

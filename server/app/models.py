@@ -1,3 +1,22 @@
+"""
+File: models.py
+Description: Source code which defines database schema using the ORM system.
+
+Contributors:
+Michael Koenig
+Sofia Serbina
+Parisa Babaei
+David Schoen
+
+Created: 2024-11-27
+Last Modified: 2025-01-01
+
+Project: A Sign From Above
+URL: https://git.chalmers.se/courses/dit826/2024/group4
+
+License: MIT License (see LICENSE file for details)
+"""
+
 from django.db import models
 from django.core.exceptions import ValidationError
 from keras.models import load_model

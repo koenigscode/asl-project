@@ -1,3 +1,20 @@
+"""
+File: data_prep_test.py
+Description: Unit tests for the data_prep.py file.
+
+Contributors:
+Parisa Babaei
+Adam Faundez Laurokari
+
+Created: 2025-01-02
+Last Modified: 2025-01-02
+
+Project: A Sign From Above
+URL: https://git.chalmers.se/courses/dit826/2024/group4
+
+License: MIT License (see LICENSE file for details)
+"""
+
 import unittest
 import numpy as np
 import sys

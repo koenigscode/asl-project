@@ -1,3 +1,20 @@
+"""
+File: data_prep.py
+Description: Source code that prepares data for the model training.
+
+Contributors:
+Parisa Babaei
+Adam Faundez Laurokari
+
+Created: 2024-12-26
+Last Modified: 2025-01-02
+
+Project: A Sign From Above
+URL: https://git.chalmers.se/courses/dit826/2024/group4
+
+License: MIT License (see LICENSE file for details)
+"""
+
 import landmark_detector as ld
 import os
 import numpy as np

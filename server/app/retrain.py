@@ -1,3 +1,20 @@
+"""
+File: retrain.py
+Description: Source code which provides a function to retrain the model.
+
+Contributors:
+Parisa Babaei
+Adam Faundez Laurokari
+
+Created: 2024-12-26
+Last Modified: 2025-01-02
+
+Project: A Sign From Above
+URL: https://git.chalmers.se/courses/dit826/2024/group4
+
+License: MIT License (see LICENSE file for details)
+"""
+
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.callbacks import EarlyStopping
 from app.models import TrainingJob, TrainedModel

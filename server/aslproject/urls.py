@@ -1,5 +1,6 @@
 """
-URL configuration for aslproject project.
+File: urls.py
+Description: URL configuration for aslproject project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.1/topics/http/urls/
@@ -13,6 +14,17 @@ Class-based views
 Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+
+Contributors:
+Sofia Serbina
+
+Created: 2024-11-27
+Last Modified: 2024-11-27
+
+Project: A Sign From Above
+URL: https://git.chalmers.se/courses/dit826/2024/group4
+
+License: MIT License (see LICENSE file for details)
 """
 from django.contrib import admin
 from django.urls import include, path
