@@ -81,13 +81,14 @@ def save_recording(video_path, correct_class):
     return destination
 
 # Function to predict the sign from a video using landmark detector and the model
-def predict(video_path, correct_class):
+def predict(video_path, correct_class, preprocess=True):
     TrainedModel.change_model()
     model = TrainedModel.model
     video_X = []
-    video_path = preprocess_video(video_path)
+    if preprocess:
+        video_path = preprocess_video(video_path)
     sw = Stopwatch(2)
-    landmarks = ld.get_landmarks(video_path, detector)
+    landmarks, _ = ld.get_landmarks(video_path, detector)
     sw.stop()
     logger.info(f"Landmark detection completed in {sw.duration} seconds")
 
@@ -124,6 +125,14 @@ def predict(video_path, correct_class):
     predicted_class = np.argmax(predictions)
     # Returns the maximum probability
     predicted_probability = np.max(predictions)
+
+    if np.sum(predictions == predicted_probability) > 1:
+        logger.info("Multiple classes have the same probability")
+        return (None, predicted_probability)
+
+    if predicted_probability < 0.5 :
+        logger.info("Low confidence in prediction")
+        return (None, predicted_probability)
 
     logger.info("--------------------")
     logger.info("Probabilities for each word:")
