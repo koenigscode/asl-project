@@ -66,6 +66,8 @@ def upload_video(request):
         # Check the prediction result
         if prediction is None:
             return JsonResponse({'error': "Couldn't detect any hand movement"}, status=400)
+        elif prediction[0] is None:
+            return JsonResponse({'error': "Couldn't detect any sign"}, status=400)
         elif prediction[0] == word:
             result = "Correctly signed!"
         else:

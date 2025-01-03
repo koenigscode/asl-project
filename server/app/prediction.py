@@ -125,6 +125,14 @@ def predict(video_path, correct_class):
     # Returns the maximum probability
     predicted_probability = np.max(predictions)
 
+    if np.sum(predictions == predicted_probability) > 1:
+        logger.info("Multiple classes have the same probability")
+        return (None, predicted_probability)
+
+    if predicted_probability < 0.5 :
+        logger.info("Low confidence in prediction")
+        return (None, predicted_probability)
+
     logger.info("--------------------")
     logger.info("Probabilities for each word:")
     for i, prob in enumerate(predictions[0]):
