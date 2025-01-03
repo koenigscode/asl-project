@@ -1,3 +1,21 @@
+"""
+File: landmark_detector.py
+Description: Source code which uses a detector to find the landmarks in a video.
+Returns a video with detected landmarks.
+
+Contributors:
+Parisa Babaei
+Adam Faundez Laurokari
+
+Created: 2024-12-16
+Last Modified: 2025-01-02
+
+Project: A Sign From Above
+URL: https://git.chalmers.se/courses/dit826/2024/group4
+
+License: MIT License (see LICENSE file for details)
+"""
+
 # Credits for template:
 # https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker/python#video
 

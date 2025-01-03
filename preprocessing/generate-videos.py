@@ -1,3 +1,19 @@
+"""
+File: generate-videos.py
+Description: Preprocessing script that alters the original dataset into usable data to train the models.
+
+Contributors:
+Michael Koenig
+
+Created: 2024-11-19
+Last Modified: 2024-12-11
+
+Project: A Sign From Above
+URL: https://git.chalmers.se/courses/dit826/2024/group4
+
+License: MIT License (see LICENSE file for details)
+"""
+
 from moviepy.video.io.VideoFileClip import VideoFileClip
 import hashlib
 import sqlite3
@@ -5,7 +21,7 @@ import os
 import yt_dlp
 import argparse
 import shutil
-from tqdm import tqdm
+from tqdm import tqdm       # Adds progress bars to the console
 
 
 def download_youtube_video(url, output_path="video.mp4"):
@@ -88,6 +104,7 @@ if __name__ == "__main__":
             download_youtube_video(row["url"], tmp_path)
             print(f"Downloaded video")
 
+            # Trims and crops the videos based on the parameters outlined in the database
             trim_and_crop_video(
                 input_path=tmp_path,
                 output_path=output_path,
