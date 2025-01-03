@@ -12,6 +12,8 @@ The app then gives feedback on whether the word was signed correctly or not.
 
 The goal of this system is to be an educational tool that can be used to increase ASL literacy by providing an easy to use environment for learning.
 
+## Link to deployment
+You can find our application here: https://server-group4-712005478346.us-central1.run.app 
 
 ## Getting started
 ### Setting up the dataset
