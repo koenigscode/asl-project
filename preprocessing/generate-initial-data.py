@@ -26,6 +26,7 @@ def copy_db(source, target):
         print(f"Error copying database: {e}")
 
 
+# Keep only the words we are interested in
 def delete_rows_except(conn, table_name, clean_texts_to_keep):
     cursor = conn.cursor()
 

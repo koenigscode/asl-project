@@ -21,7 +21,7 @@ import os
 import yt_dlp
 import argparse
 import shutil
-from tqdm import tqdm
+from tqdm import tqdm       # Adds progress bars to the console
 
 
 def download_youtube_video(url, output_path="video.mp4"):
@@ -104,6 +104,7 @@ if __name__ == "__main__":
             download_youtube_video(row["url"], tmp_path)
             print(f"Downloaded video")
 
+            # Trims and crops the videos based on the parameters outlined in the database
             trim_and_crop_video(
                 input_path=tmp_path,
                 output_path=output_path,

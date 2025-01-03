@@ -76,6 +76,7 @@ def insert_data(conn, data, data_type):
     conn.commit()
 
 
+# Get the top 20 signs/words with the highest amount of videos
 def get_most_common_signs(conn):
     cursor = conn.cursor()
 
