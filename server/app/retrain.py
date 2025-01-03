@@ -38,9 +38,18 @@ def retrain(job_id):
     model = keras.models.load_model(MODEL_PATH)
 
     # Load, pad, and split the dataset
+    print("Loading dataset...")
+    print(f"Selected words: {SELECT_WORDS}")
+    print(f"Dataset path: {DATASET_PATH}")
+    print(f"Detector path: {DETECTOR_PATH}")
+    print(f"Base model: {BASE_MODEL_NAME}")
     X, y, num_videos, highest_frame, bad_videos = prep.get_data(SELECT_WORDS, DATASET_PATH, DETECTOR_PATH)
     padded_X, mask = prep.padX(X, num_videos, highest_frame, NUM_FEATURES)
-    X_train, X_test, y_train, y_test = train_test_split(padded_X, y, test_size=0.2, random_state=42)
+    if num_videos < 2:
+        X_train, y_train = padded_X, y
+        X_test, y_test = [[[]]], []
+    else:
+        X_train, X_test, y_train, y_test = train_test_split(padded_X, y, test_size=0.2, random_state=42)
     X_train = np.array(X_train)
     X_test = np.array(X_test)
     y_train = np.array(y_train)
@@ -52,8 +61,12 @@ def retrain(job_id):
     model.fit(X_train, y_train, epochs=100, callbacks=[early_stopping])
 
     # Evaluate the model
-    test_loss, test_accuracy = model.evaluate(X_test, y_test)
-    word_accuracy = prep.get_word_accuracy(SELECT_WORDS, model, X_test, y_test)
+    if num_videos < 2:
+        test_loss, test_accuracy = 0.0,0.0
+        word_accuracy = {}
+    else:
+        test_loss, test_accuracy = model.evaluate(X_test, y_test)
+        word_accuracy = prep.get_word_accuracy(SELECT_WORDS, model, X_test, y_test)
 
     # Save the model
     with tempfile.TemporaryDirectory() as temp_dir:

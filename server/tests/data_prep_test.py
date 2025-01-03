@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 import sys
-sys.path.insert(1, '../server/model_training')
+sys.path.insert(1, 'model_training/')
 import data_prep as prep
 
 # Test cases for data_prep.py
@@ -9,8 +9,8 @@ class TestDataPrep(unittest.TestCase):
     # Test if the function read_files returns the correct output (not None)
     def test_get_data(self):
         words = ['no', 'teacher']
-        path = '../preprocessing/dataset/'
-        detector_path = '../models/hand_landmarker.task'
+        path = 'tests/test_dataset/'
+        detector_path = './models/hand_landmarker.task'
         X, y, num_videos, highest_frame, bad_videos = prep.get_data(words, path, detector_path)
 
         self.assertIsNotNone(X)
@@ -24,16 +24,16 @@ class TestDataPrep(unittest.TestCase):
     # Test if the function read_files raises an exception when the path is invalid
     def test_get_data_invalid_videopath(self):
         words = ['no', 'teacher']
-        path = '../invalid/videopath/'
-        detector_path = '../models/hand_landmarker.task'
+        path = './invalid/videopath/'
+        detector_path = './models/hand_landmarker.task'
         with self.assertRaises(FileNotFoundError):
             prep.get_data(words, path, detector_path)
     
     # Test if the function read_files raises an exception when using invalid words
     def test_get_data_invalid_words(self):
         words = ['invalid', 'words']
-        path = '../preprocessing/dataset/'
-        detector_path = '../models/hand_landmarker.task'
+        path = 'tests/test_dataset/'
+        detector_path = './models/hand_landmarker.task'
         with self.assertRaises(FileNotFoundError):
             prep.get_data(words, path, detector_path)
 
@@ -51,5 +51,12 @@ class TestDataPrep(unittest.TestCase):
         self.assertEqual(mask.shape, (2, 3, 3))
         self.assertTrue(np.array_equal(padded_X, expected_padded_X))
 
-if __name__ == '__main__':
-    unittest.main()
+    # Test if get_word_accuracy returns the correct output with no data
+    def test_get_word_accuracy_no_data(self):
+        accuracy = prep.get_word_accuracy(["no"], None, np.array([]), np.array([]))
+        self.assertEqual(accuracy, {"no": [0,0]})
+
+    # Test if get_word_accuracy returns an exception when the model is None
+    def test_get_word_accuracy_no_model(self):
+        with self.assertRaises(AttributeError):
+            prep.get_word_accuracy(["no"], None, np.array([[[1]]]), np.array([0]))
