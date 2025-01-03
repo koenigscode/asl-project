@@ -142,6 +142,7 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Define our own custom logger that prints to both console and a log file
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
