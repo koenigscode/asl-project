@@ -34,13 +34,20 @@ SECRET_KEY = 'django-insecure-3@kl&q%vii5ech3b3eqwxza1pxp6@+v5wbeyi3o-!%l^8vtgl+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
-
-ALLOWED_HOSTS = ["*"]
-
 CSRF_TRUSTED_ORIGINS = [
-    'https://*.run.app'
+    'https://*.run.app',
+    'https://*.googleusercontent.com',
+    os.getenv('CLOUD_RUN_SERVICE_URL', ''),
 ]
 
+# Handle Cloud Run's HTTPS proxy
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Allow dynamic hosts
+ALLOWED_HOSTS = [
+    os.getenv('CLOUD_RUN_SERVICE_URL', '').replace('https://', '').replace('http://', ''),
+    '*'
+]
 
 
 # Application definition
