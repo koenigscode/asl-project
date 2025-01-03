@@ -3,11 +3,11 @@ stages:
   - test
   - deploy
 
-# workflow:
-#    rules:
-#      - if: $CI_MERGE_REQUEST_ID
-#        when: always
-#      - when: never
+workflow:
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
+      when: always
+    - when: never
 
 variables:
   PROJECT_ID: asl-group4
