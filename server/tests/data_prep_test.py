@@ -3,7 +3,6 @@ File: data_prep_test.py
 Description: Unit tests for the data_prep.py file.
 
 Contributors:
-Parisa Babaei
 Adam Faundez Laurokari
 
 Created: 2025-01-02

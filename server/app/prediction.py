@@ -6,7 +6,6 @@ This provides functions which will be used to get a prediction based on the user
 Contributors:
 Michael Koenig
 Teo Portase
-Parisa Babaei
 
 Created: 2024-12-08
 Last Modified: 2025-01-01

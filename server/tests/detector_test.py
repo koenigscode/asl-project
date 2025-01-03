@@ -3,7 +3,6 @@ File: detector_test.py
 Description: Unit tests for the landmark_detector.py file.
 
 Contributors:
-Parisa Babaei
 Adam Faundez Laurokari
 
 Created: 2025-01-02

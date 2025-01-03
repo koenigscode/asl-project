@@ -5,7 +5,7 @@ Returns a video with detected landmarks.
 
 Contributors:
 Parisa Babaei
-David Schoen
+Adam Faundez Laurokari
 
 Created: 2024-12-16
 Last Modified: 2025-01-02

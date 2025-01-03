@@ -4,7 +4,6 @@ Description: Source code which provides a function to retrain the model.
 
 Contributors:
 Parisa Babaei
-Adam Faundez Laurokari
 
 Created: 2024-12-26
 Last Modified: 2025-01-02

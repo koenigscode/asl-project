@@ -5,7 +5,6 @@ Description: Code that defines functionality for the different url paths.
 Contributors:
 Michael Koenig
 Sofia Serbina
-Parisa Babaei
 
 Created: 2024-11-27
 Last Modified: 2024-12-29

@@ -5,7 +5,6 @@ Description: Code that defines the url paths.
 Contributors:
 Michael Koenig
 Sofia Serbina
-Parisa Babaei
 
 Created: 2024-11-27
 Last Modified: 2024-12-29
