@@ -1,6 +1,7 @@
+#!/usr/bin/env python
 """
 File: manage.py
-Description: Django code for project management.
+Description: Django's command-line utility for administrative tasks.
 
 Contributors:
 Sofia Serbina
@@ -13,9 +14,6 @@ URL: https://git.chalmers.se/courses/dit826/2024/group4
 
 License: MIT License (see LICENSE file for details)
 """
-
-#!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
 import os
 import sys
 
