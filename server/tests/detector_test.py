@@ -24,7 +24,7 @@ class TestLandmarkDetector(unittest.TestCase):
         model_path = os.path.abspath('./models/hand_landmarker.task')
         detector = ld.get_detector(model_path)
         video_path = 'tests/test_dataset/teacher/3e10848fd5.mp4'
-        landmarks, frames = ld.get_landmarks(video_path, detector, True)
+        landmarks, frames = ld.get_landmarks(video_path, detector)
         self.assertIsNotNone(landmarks)
         self.assertIsNotNone(frames)
 
