@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
 RUN python3 -m venv /venv
 
 RUN /venv/bin/pip install --upgrade pip
-RUN /venv/bin/pip install django opencv-python-headless tensorflow mediapipe python-dotenv whitenoise moviepy stopwatch.py scikit-learn
+RUN /venv/bin/pip install django opencv-python-headless tensorflow mediapipe python-dotenv whitenoise moviepy stopwatch.py scikit-learn tqdm TIME-python jupyter coverage
 
 VOLUME /app
 VOLUME /models
