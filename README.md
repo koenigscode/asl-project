@@ -60,13 +60,13 @@ Only videos where hand landmarks were detected are saved.
 
 
 ## Folder structure
-- `model_training`: Jupyter Notebook for training the model, landmark detection script
-- `models`: Trained models, `.env` file for model metadata, landmark detection model
 - `preprocessing`: Scripts for downloading videos from the original dataset, cropping them, changing the fps,
     cutting them and merging dataset folders. You should have downloaded the datasets folder into this folder.
 - `server`: Django server for the app
     - `server/app`: Main app folder
     - `server/app/templates`: HTML templates
+    - `server/model_training`: Jupyter Notebook for training the model, landmark detection script
+    - `server/models`: Trained models, `.env` file for model metadata, landmark detection model
     - `server/static`: Static files (Videos to show on frontend). Will be collected to `server/staticfiles` during the Docker build, and served with whitenoise.
     - `server/Dockerfile` Dockerfile for Django - for development, use `docker-compose.yml` instead
 
