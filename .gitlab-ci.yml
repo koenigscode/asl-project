@@ -52,7 +52,7 @@ test:
     - docker login $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
     - docker run --rm gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA coverage run manage.py test tests --pattern="*_test.py"
     - docker run --rm gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA coverage report -m --ignore-errors
-    - docker run --rm gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA coverage xml
+    - docker run --rm gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA coverage xml --ignore-errors
   artifacts:
     paths:
       - server/coverage.xml
