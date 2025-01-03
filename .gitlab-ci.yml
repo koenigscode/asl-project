@@ -50,6 +50,6 @@ test:
   script:
     - cd server
     - docker login $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
-    - docker run --rm gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA python -m coverage run manage.py test tests --pattern="*_test.py" && coverage report -m --ignore-errors
+    - docker run --rm gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA python3 -m coverage run manage.py test tests --pattern="*_test.py" && coverage report -m --ignore-errors
 
   coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
