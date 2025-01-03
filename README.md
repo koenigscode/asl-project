@@ -99,6 +99,8 @@ An 'x' marks that the person was present, a '/' marks a tardy, and a ' ' marks a
 
 ## Task distribution
 
+This was imported at the end of the project as it was documented in a separate spreadsheet we all had access to. We found it easier to update the spreadsheet throughout the week than having to constantly update the README.
+
 | Milestone | Everyone | Adam | Parisa | Kale | Sofia | David | Teo |
 | --------- | -------- | ---- | ------ | ---- | ----- | ----- | --- |
 | \- | Brainstorm ideas for project, Look for datasets, Team contract | \- | \- | \- | \- | \- | \- |
@@ -108,5 +110,5 @@ An 'x' marks that the person was present, a '/' marks a tardy, and a ' ' marks a
 | **W49** | \- | Create model (issue #9), Visualize mediapipe data (issue #16) | Create model (issue #9), Visualize mediapipe data (issue #16) | UI for end-user (issue #10) | Deployment (issue #14) | UI for admin (issue #11) | Training data, Changed to create model (issue #9) |
 | **W50** | Make final presentation, Have a mock presentation/demo | Create unit tests for pipeline (issue #17) | Change probability calculations (issue #25), Train model on new data (issue #27) | Save recordings (issue #23), General improvements (issue #24), Create README (issue #26) | Add functionality for dynamic sequence length (issue #19) | UI for admin (issue #11) | Clean training data (issue #15), Improve issue with overfitting (issue #18), Log file (issue #21) |
 | **W51** | Record selves to add more data for training the model (issue #22) | \- | \- | Bug fixing (issue #28) | \- | \- | \- |
-| **W52** | \- | Section 3, Testing part of Section 4 | Section 3, Interacting with system (admin UI) of Section 4 | Preprocessing part of Section 3, Architecture part of Section 4 | Section 2 updating, Interacting with system (end-user UI) &Deployment part of Section 4 | Section 5 | Cover page, Table of Contents, Section 1 & 2 editing, AI Efficiency & Risk Mitigation part of Section 4, Section 6 & 7, Appendices |
+| **W52** | Work on final report | Section 3, Testing part of Section 4 | Section 3, Interacting with system (admin UI) of Section 4 | Preprocessing part of Section 3, Architecture part of Section 4 | Section 2 updating, Interacting with system (end-user UI) &Deployment part of Section 4 | Section 5 | Cover page, Table of Contents, Section 1 & 2 editing, AI Efficiency & Risk Mitigation part of Section 4, Section 6 & 7, Appendices |
 | **W1** | Finish final report sections, Final checkthrough of the project and requirements | Create Django tests (issue #29) | Change admin UI design (issue #30), Update admin UI features (issue #11) | Allow different models to be used in end user UI based on choice in admin UI (issue #20) | \- | \- | Add tables to README (issue #31), Comment where missing (issue #32) |
