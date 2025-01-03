@@ -4,10 +4,10 @@ stages:
   - deploy
 
 workflow:
-   rules:
-     - if: $CI_MERGE_REQUEST_ID
-       when: always
-     - when: never
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
+      when: always
+    - when: never
 
 variables:
   PROJECT_ID: asl-group4
@@ -32,10 +32,10 @@ build:
     DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay2
   script:
-    - cd server
-    - docker info
-    - docker build -f Dockerfile -t gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA .
-    - docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA
+  - cd $CI_PROJECT_DIR 
+  - docker info
+  - docker build -f server/Dockerfile-deploy -t gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA .
+  - docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA
 
 test:
   stage: test
@@ -50,5 +50,5 @@ test:
   script:
     - cd server
     - docker login $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
-    - docker run --rm gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA /bin/bash -c "coverage run manage.py test tests --pattern=\"*_test.py\" && coverage report -m --ignore-errors"
+    - docker run --rm gcr.io/$PROJECT_ID/$SERVICE_NAME:$CI_COMMIT_SHA /bin/bash -c "/venv/bin/coverage run manage.py test tests --pattern=\"*_test.py\" && /venv/bin/coverage report -m --ignore-errors"
   coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
