@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install python dependencies
-RUN pip install django opencv-python-headless tensorflow mediapipe python-dotenv whitenoise moviepy stopwatch.py tqdm scikit-learn TIME-python jupyter
+RUN pip install django opencv-python-headless tensorflow mediapipe python-dotenv whitenoise moviepy stopwatch.py tqdm scikit-learn TIME-python jupyter coverage
 
 # Copy the current directory contents into the container at /app
 COPY . .
